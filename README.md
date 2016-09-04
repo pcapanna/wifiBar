@@ -11,11 +11,13 @@ Más info: https://docs.npmjs.com/getting-started/what-is-npm
 
 ## Instalar npm con APT:
 
-Ejecutar `sudo apt get install npm`
+Ejecutar 
+`sudo apt get install npm`
 
 ## Para los que usuen UBUNTU tienen que correr esto:
 
-Ejecutar `sudo ln -s /usr/bin/nodejs /usr/bin/node`
+Ejecutar 
+`sudo ln -s /usr/bin/nodejs /usr/bin/node`
 
 ## Instalar npm WINDOWS:
 
@@ -24,7 +26,8 @@ http://blog.teamtreehouse.com/install-node-js-npm-windows
 
 ## Instalar yo, grunt-cli, bower, generator-angular y generator-karma:
 
-Ejecutar `npm install -g grunt-cli bower yo generator-karma generator-angular`
+Ejecutar 
+`npm install -g grunt-cli bower yo generator-karma generator-angular`
 
 ## IDE recomendada WEBSTORM (Pueden usar cualquier otra. En tal caso ignorar esto): 
 
@@ -39,11 +42,11 @@ En package.json se listan dependencias manejadas por npm. Y en bower.json depend
 
 El código javascript como sabrán es interpretado, no se compila. Todas sus dependencias se resuelven en tiempo de ejecución y por este motivo el resultado de correr nuestra aplicación sin instalar estas dependencias va a ser una página incompleta y seguramente deformada visualmente.
 
-Descarga dependencias de código incluídas en el archivo package.json
 `npm install`
+Descarga dependencias de código incluídas en el archivo package.json
 
-Descarga dependencias de código incluídas en el archivo bower.json
 `bower install`
+Descarga dependencias de código incluídas en el archivo bower.json
 
 # AHORA SI. Correr la aplicación localmente:
 
