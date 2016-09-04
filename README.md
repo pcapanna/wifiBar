@@ -50,11 +50,14 @@ Ejecutar `bower install` descarga dependencias de código incluídas en el archi
 
 Ejecutar `grunt serve` en la carpeta de proyecto
 
-## Tutoriales recomendados:
+# Tutoriales recomendados:
 
 HTML: www.w3schools.com/html/
+
 JAVASCRIPT: www.w3schools.com/js/
+
 CSS: www.w3schools.com/css/
+
 ANGULARJS: www.w3schools.com/angular/
 
 
