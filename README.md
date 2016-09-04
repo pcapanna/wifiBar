@@ -42,12 +42,12 @@ En package.json se listan dependencias manejadas por npm. Y en bower.json depend
 
 El código javascript como sabrán es interpretado, no se compila. Todas sus dependencias se resuelven en tiempo de ejecución y por este motivo el resultado de correr nuestra aplicación sin instalar estas dependencias va a ser una página incompleta y seguramente deformada visualmente.
 
-Ejecutar `npm install`. Descarga dependencias de código incluídas en el archivo package.json
+Ejecutar `npm install` descarga dependencias de código incluídas en el archivo package.json
 
-Ejecutar `bower install`. Descarga dependencias de código incluídas en el archivo bower.json
+Ejecutar `bower install` descarga dependencias de código incluídas en el archivo bower.json
 
 # AHORA SI. Correr la aplicación localmente:
 
-Ejecutar `grunt serve` en la carpeta de proyecto.
+Ejecutar `grunt serve` en la carpeta de proyecto
 
 
