@@ -44,7 +44,7 @@ Ejecutar `npm install` descarga dependencias de código incluídas en el archivo
 
 Ejecutar `bower install` descarga dependencias de código incluídas en el archivo bower.json
 
-Dato de color: El código javascript como sabrán es interpretado, no se compila. Todas sus dependencias se resuelven en tiempo de ejecución y por este motivo podríamos correr nuestra aplicación sin instalar dependencias de bower o npm pero como resultado obtenemos una página incompleta y seguramente deje mucho que desear visualmente.
+Dato de color: El código javascript como sabrán es interpretado, no se compila. Todas sus dependencias se resuelven en tiempo de ejecución y por este motivo podríamos correr nuestra aplicación sin sus dependencias. El browser va a chillar y se va a ver horrible xD.
 
 # AHORA SI. Correr la aplicación localmente:
 
