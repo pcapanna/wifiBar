@@ -40,11 +40,11 @@ Cambiar la fecha a otra adelante en el tiempo (por ejemplo 1 de Enero de 2036). 
 Básicamente nuestro proyecto no está completo si no incluímos una cantidad bastante grande de código provisto por terceros. Esta dependencia se hace explícita en distintos archivos del proyecto.
 En package.json se listan dependencias manejadas por npm. Y en bower.json dependencias manejadas por bower (Bower es otro gestor de paquetes pero destinado sólo a frontend. Es una de las herramientas más importantes para nuestra aplicación. Más informacion: http://www.desarrolloweb.com/articulos/uso-bower-gestor-dependencias.html).
 
-El código javascript como sabrán es interpretado, no se compila. Todas sus dependencias se resuelven en tiempo de ejecución y por este motivo el resultado de correr nuestra aplicación sin instalar estas dependencias va a ser una página incompleta y seguramente deformada visualmente.
-
 Ejecutar `npm install` descarga dependencias de código incluídas en el archivo package.json
 
 Ejecutar `bower install` descarga dependencias de código incluídas en el archivo bower.json
+
+Dato de color: El código javascript como sabrán es interpretado, no se compila. Todas sus dependencias se resuelven en tiempo de ejecución y por este motivo podríamos correr nuestra aplicación sin instalar dependencias de bower o npm pero como resultado obtenemos una página incompleta y seguramente deje mucho que desear visualmente.
 
 # AHORA SI. Correr la aplicación localmente:
 
