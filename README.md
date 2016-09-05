@@ -62,6 +62,6 @@ CSS: www.w3schools.com/css/
 
 ANGULARJS: www.w3schools.com/angular/
 
-## Comunicación con google-maps Api
+## Comunicación con google-maps API
 
 Directiva de AngularJS: https://angular-ui.github.io/angular-google-maps/#!/use
