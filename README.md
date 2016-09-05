@@ -46,11 +46,13 @@ Ejecutar `bower install` descarga dependencias de código incluídas en el archi
 
 Dato de color: El código javascript como sabrán es interpretado, no se compila. Todas sus dependencias se resuelven en tiempo de ejecución y por este motivo podríamos correr nuestra aplicación sin sus dependencias. El browser va a chillar y se va a ver horrible xD.
 
-# AHORA SI. Correr la aplicación localmente:
+# Ejecutar la aplicación localmente:
 
 Ejecutar `grunt serve` en la carpeta de proyecto
 
-# Tutoriales recomendados:
+# Tutoriales:
+
+## Lenguajes y Frameworks
 
 HTML: www.w3schools.com/html/
 
@@ -60,6 +62,6 @@ CSS: www.w3schools.com/css/
 
 ANGULARJS: www.w3schools.com/angular/
 
-# Quickstart de directiva de AngularJS para comunicación contra api de google.
+## Comunicación con google-maps Api
 
-https://angular-ui.github.io/angular-google-maps/#!/use
+Directiva de AngularJS: https://angular-ui.github.io/angular-google-maps/#!/use
