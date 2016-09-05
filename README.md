@@ -14,6 +14,13 @@ Más info: https://docs.npmjs.com/getting-started/what-is-npm
 Ejecutar 
 `sudo apt get install npm`
 
+`sudo mkdir $(npm config get prefix)/lib/node_modules`
+
+`sudo mkdir $(npm config get prefix)/lib/node_modules`
+
+`sudo chown -R $(whoami) $(npm config get prefix)/{lib/node_modules,bin,share}`
+
+
 ## Para los que usuen UBUNTU tienen que correr esto:
 
 Ejecutar 
