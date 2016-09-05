@@ -60,4 +60,6 @@ CSS: www.w3schools.com/css/
 
 ANGULARJS: www.w3schools.com/angular/
 
+# Quickstart de directiva de AngularJS para comunicación contra api de google.
 
+https://angular-ui.github.io/angular-google-maps/#!/use
