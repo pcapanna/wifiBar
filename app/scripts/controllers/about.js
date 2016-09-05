@@ -2,16 +2,12 @@
 
 /**
  * @ngdoc function
- * @name wifiBarApp.controller:AboutCtrl
+ * @name wifindBarApp.controller:AboutCtrl
  * @description
  * # AboutCtrl
- * Controller of the wifiBarApp
+ * Controller of the wifindBarApp
  */
-angular.module('wifiBarApp')
+angular.module('wifindBarApp')
   .controller('AboutCtrl', function () {
-    this.awesomeThings = [
-      'HTML5 Boilerplate',
-      'AngularJS',
-      'Karma'
-    ];
+
   });
