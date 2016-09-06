@@ -5,7 +5,7 @@ WiFi Bar
 
 ## Instalar npm:
 
-NPM es un gestor de paquetes para código javascript, casi en particular descarga módulos construidos en [nodejs](http://www.tutorialspoint.com/nodejs/nodejs_introduction.htm) (no se preocupen por saber nada de nodejs, nosotros no vamos a trabajar sobre esto directamente), que son las herramientas de trabajo que vamos a usar para construir, correr, testear y agregar algunos nuevos componentes a nuestra aplicación. Más adelante explico alguna de las herramientas que más vamos a usar.
+NPM es un gestor de paquetes para código javascript, casi en particular descarga módulos construidos en [nodejs](http://www.tutorialspoint.com/nodejs/nodejs_introduction.htm) (no se preocupen por saber nada de nodejs, nosotros no vamos a trabajar sobre esto directamente), que son las herramientas de trabajo que vamos a usar para construir, correr, testear y agregar algunos nuevos componentes a nuestra aplicación. Más adelante explico alguna de las herramientas que usamos.
 
 Más info: https://docs.npmjs.com/getting-started/what-is-npm
 
@@ -13,8 +13,6 @@ Más info: https://docs.npmjs.com/getting-started/what-is-npm
 
 Ejecutar 
 `sudo apt get install npm`
-
-`sudo mkdir $(npm config get prefix)/lib/node_modules`
 
 `sudo mkdir $(npm config get prefix)/lib/node_modules`
 
