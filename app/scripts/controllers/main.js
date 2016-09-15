@@ -16,7 +16,46 @@ angular.module('wifindBarApp')
 
     var latCentro = -34.6277801, longCentro = -58.3909607, delta = 0.05;
     
-    $scope.map = { center: { latitude: latCentro, longitude: longCentro }, zoom: 13, bounds: {} };
+//     $scope.ref = true;
+    
+    $scope.map = { 
+      center: { latitude: latCentro, longitude: longCentro },
+      zoom: 13,
+      bounds: {},
+      events:{
+	click: function(map,eventName,args){
+	  
+	    var e = args[0];
+	    
+	    $scope.marker = {
+	      id: 0,
+	      coords: {
+		latitude: e.latLng.lat(),
+		longitude: e.latLng.lng()
+	      },
+	      options: { visible: true, draggable: true },
+	      events: {
+		dragend: function (marker, eventName, args) {
+		  $log.log('marker dragend');
+		  var lat = marker.getPosition().lat();
+		  var lon = marker.getPosition().lng();
+		  $log.log(lat);
+		  $log.log(lon);
+
+		  $scope.marker.options = {
+		    draggable: true,
+	//             labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+		    labelAnchor: "100 0",
+		    labelClass: "marker-labels"
+		  };
+		}
+	      }
+	    };
+	    
+	    $scope.$apply();
+	}
+      }
+    };
     
 
     $scope.options = {
@@ -33,12 +72,14 @@ angular.module('wifindBarApp')
 	var ret = {
         latitude: latitude,
         longitude: longitude,
-        title: 'm' + i
+        title: 'm' + i,
+	icon: '/images/bar2.png'
       };
       ret[idKey] = i;
       return ret;
     };
     $scope.randomMarkers = [];
+    
     // Get the bounds from the map once it's loaded
     $scope.$watch('map.bounds', function(nv, ov) {
       // Only need to regenerate once
@@ -56,15 +97,15 @@ angular.module('wifindBarApp')
 
 
 
-    $scope.coordsUpdates = 0;
-    $scope.dynamicMoveCtr = 0;
+//     $scope.coordsUpdates = 0;
+//     $scope.dynamicMoveCtr = 0;
     $scope.marker = {
       id: 0,
       coords: {
         latitude: latCentro,
         longitude: longCentro
       },
-      options: { draggable: true },
+      options: { visible: false, draggable: true },
       events: {
         dragend: function (marker, eventName, args) {
           $log.log('marker dragend');
@@ -75,7 +116,7 @@ angular.module('wifindBarApp')
 
           $scope.marker.options = {
             draggable: true,
-            labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+//             labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
             labelAnchor: "100 0",
             labelClass: "marker-labels"
           };
