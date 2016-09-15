@@ -19,6 +19,10 @@
           </md-button>
         </div>
 
+        <a href="#/">Distancia Maxima</a>
+        <div><input type="number" class="form-control" id="usr" style="width: 60%; display: inline;" step="100" min="0"/>
+        </div>
+
         <multiselect style="width: 80%; margin-left: 20px;" selected-text="Filtros" ms-header="Filtros"
                      ng-model="selectModel" options="f.descripcion for f in filtros" data-multiple="true"
                      data-compare-by="id" scroll-after-rows="5" filter-after-rows="5" max-width="100"
@@ -55,13 +59,13 @@
           <h1>Wi-Find Bar</h1>
 
           <ui-gmap-google-map center='map.center' zoom='map.zoom'  draggable="true" options="options" bounds="map.bounds">
-	     
+
 	     <ui-gmap-markers models="randomMarkers" coords="'self'" icon="'icon'">
 	     </ui-gmap-markers>
-	     
+
 	     <ui-gmap-marker coords="marker.coords" options="marker.options" events="marker.events" idkey="marker.id">
 	     </ui-gmap-marker>
-          
+
           </ui-gmap-google-map>
 
           <div ng-cloak>
@@ -71,7 +75,7 @@
 	    </ul>
 	  </div>
 
-	  
+
           <br>
           <p>Casi todo fue configuración por ahora. Me parece que sale en un pedo. <code>#AugustoMarica</code></p>
           <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
