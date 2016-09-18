@@ -61,7 +61,7 @@
           <ui-gmap-google-map center='vm.map.center' zoom='vm.map.zoom' draggable="true" options="vm.options"
                               bounds="vm.map.bounds" events="vm.map.events" control="vm.map.control">
 
-            <ui-gmap-markers models="vm.randomMarkers" coords="'self'" icon="'icon'">
+            <ui-gmap-markers ng-if="vm.markers!=undefined" models="vm.markers" coords="'self'" icon="'icon'">
             </ui-gmap-markers>
 
             <ui-gmap-marker ng-if="vm.marker!=undefined" idkey="vm.marker.id" control="vm.markerControl"
