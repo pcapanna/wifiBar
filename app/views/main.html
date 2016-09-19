@@ -9,12 +9,10 @@
       </li>
       <li>
         <span style="color:#999999;">Buscar Dirección</span>
-          <md-button style="background-color: lightslategray;" class="md-icon-button md-24 md-ink-ripple"
-                     ng-click="vm.buscarBaresCercanos()">
-            <i class="material-icons md-24" style=" color:white">search</i>
-          </md-button>
-
-
+        <md-button style="background-color: lightslategray;" class="md-icon-button md-24 md-ink-ripple"
+                   ng-click="vm.buscarBaresCercanos()">
+          <i class="material-icons md-24" style=" color:white">search</i>
+        </md-button>
         <!--&lt;!&ndash;Buscar Dirección&ndash;&gt;-->
         <!--<div><input type="text" class="form-control" id="usr" style="width: 60%; display: inline;"/>-->
         <!--<md-button style="background-color: lightslategray;" class="md-icon-button md-24 md-ink-ripple"-->
@@ -23,29 +21,15 @@
         <!--</md-button>-->
         <!--</div>-->
 
+
+          <input type="text" placeholder="Distancia en metros" ng-model="vm.maxDistancia" class="form-control"
+                 style="width: 80%; margin-left: 20px; display: inline;"/>
         <multiselect style="width: 80%; margin-left: 20px;" selected-text="Filtros" ms-header="Filtros"
                      ng-model="selectModel" options="f.descripcion for f in vm.filtros" data-multiple="true"
                      data-compare-by="id" scroll-after-rows="5" filter-after-rows="5" max-width="100"
                      tabindex="-1">
         </multiselect>
-      </li>
-      <!--<li>-->
-      <!--<a href="#">Shortcuts</a>-->
-      <!--</li>-->
-      <!--<li>-->
-      <!--<a href="#">Overview</a>-->
-      <!--</li>-->
-      <!--<li>-->
-      <!--<a href="#">Events</a>-->
-      <!--</li>-->
-      <!--<li>-->
-      <!--<a href="#">About</a>-->
-      <!--</li>-->
-      <!--<li>-->
-      <!--<a href="#">Services</a>-->
-      <!--</li>-->
-      <!--<li>-->
-      <!--<a href="#">Contact</a>-->
+
       </li>
     </ul>
   </div>
@@ -58,10 +42,10 @@
         <div class="col-lg-12">
           <h1>Wi-Find Bar</h1>
 
-          <ui-gmap-google-map center='vm.mapa.center' zoom='vm.mapa.zoom' draggable="true" options="vm.options"
-                              bounds="vm.mapa.bounds" events="vm.mapa.events" control="vm.mapa.control">
+          <ui-gmap-google-map center='vm.map.center' zoom='vm.map.zoom' draggable="true" options="vm.options"
+                              bounds="vm.map.bounds" events="vm.map.events" control="vm.map.control">
 
-            <ui-gmap-markers ng-if="vm.markers!=undefined" models="vm.markers" coords="'self'" icon="'icon'">
+            <ui-gmap-markers models="vm.randomMarkers" coords="'self'" icon="'icon'">
             </ui-gmap-markers>
 
             <ui-gmap-marker ng-if="vm.marker!=undefined" idkey="vm.marker.id" control="vm.markerControl"
@@ -70,16 +54,8 @@
 
           </ui-gmap-google-map>
 
-          <!--          <div ng-cloak>
-                  <ul>
-                    <li>coords update ctr: {{coordsUpdates}}</li>
-                    <li>dynamic move ctr: {{dynamicMoveCtr}}</li>
-                  </ul>
-                </div>
 
-                -->
           <br>
-          <p>Casi todo fue configuración por ahora. Me parece que sale en un pedo. <code>#AugustoMarica</code></p>
           <a href="#menu-toggle" class="btn btn-default" id="menu-toggle">Toggle Menu</a>
         </div>
       </div>

@@ -14,40 +14,34 @@ DibujadorDeMapa.$inject = ['$timeout', 'Mapa'];
 
 function DibujadorDeMapa($timeout, Mapa) {
   var viejoMapa = undefined;
-  var vm = undefined;
 
   return {
-    setVistaModel: setVistaModel,
     sobreescribirMapa: sobreescribirMapa
   };
 
 
-  function setVistaModel(vmIn) {
-    vm = vmIn;
-  }
-
-  function sobreescribirMapa() {
+  function sobreescribirMapa(vm) {
 
     var mapa = Mapa.dameInstancia();
 
     vm.mapa = {
       center: mapa.centradoEnUbicacion,
-      control: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ?{}: vm.viejoMapa.control,
-      zoom: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ?13: vm.viejoMapa.zoom,
-      bounds: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ?{}: vm.viejoMapa.bounds,
-      events: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ?{}:vm.viejoMapa.events
+      control: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ? {} : vm.viejoMapa.control,
+      zoom: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ? 13 : vm.viejoMapa.zoom,
+      bounds: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ? {} : vm.viejoMapa.bounds,
+      events: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ? {} : vm.viejoMapa.events
     };
 
     if (viejoMapa == undefined || mapa.marcadores != viejoMapa.marcadores) {
-      sobreescribirMarcadores(mapa.marcadores);
+      sobreescribirMarcadores(vm, mapa.marcadores);
     }
 
     if (viejoMapa == undefined || mapa.marcadorDeBusqueda != viejoMapa.marcadorDeBusqueda) {
-      sobreescribirMarcadorDeBusqueda(mapa.marcadorDeBusqueda);
+      sobreescribirMarcadorDeBusqueda(vm, mapa.marcadorDeBusqueda);
     }
 
     if (viejoMapa == undefined || mapa.eventosPorAccion != viejoMapa.eventosPorAccion) {
-      sobreescribirEventosPorAccion(mapa.eventosPorAccion);
+      sobreescribirEventosPorAccion(vm, mapa.eventosPorAccion);
     }
 
     vm.viejoMapa = clone(mapa);
@@ -57,24 +51,29 @@ function DibujadorDeMapa($timeout, Mapa) {
   function clickMapFunction(map, eventName, args) {
     var e = args[0];
     var coords = {longitud: e.latLng.lat(), latitud: e.latLng.lng()};
-    mapa.eventosPorAccion[click](coords);
-    sobreescribirMapa()
+    var mapa = Mapa.dameInstancia();
+    mapa.eventosPorAccion["click"](coords);
   }
 
-  function sobreescribirEventosPorAccion(eventosPorAccion) {
-    if (eventosPorAccion == undefined){
+  function sobreescribirEventosPorAccion(vm, eventosPorAccion) {
+    if (eventosPorAccion == undefined) {
       return;
     }
-    switch (Object.keys(eventosPorAccion)) {
-      case "click":
-        vm.mapa.events[click] = clickMapFunction;
-        break;
-      default:
-        break;
+    for (var nombreDeEvento in eventosPorAccion){
+      switch (nombreDeEvento) {
+        case "click":
+          vm.mapa.events["click"] = clickMapFunction;
+          break;
+        default:
+          break;
+      }
     }
   }
 
-  function sobreescribirMarcadores(marcadores) {
+  function sobreescribirMarcadores(vm, marcadores) {
+    if (vm == undefined){
+      return;
+    }
     vm.markers = undefined;
 
     var vmMarkers = [];
@@ -87,24 +86,29 @@ function DibujadorDeMapa($timeout, Mapa) {
         title: 'm' + i,
         icon: marcador.icono
       };
+      vmMarkers.push(vmMarker);
     }
     vm.markers = vmMarkers;
   }
 
-  function sobreescribirMarcadorDeBusqueda(marcadorDeBusqueda) {
-    if (marcadorDeBusqueda == undefined){
+  function sobreescribirMarcadorDeBusqueda(vm, marcadorDeBusqueda) {
+    if (marcadorDeBusqueda == undefined) {
       return;
     }
     vm.marker = undefined;
     $timeout(function () {
-      var vmMarker = {
-        id: 0,
-        latitude: marcadorDeBusqueda.latitud,
-        longitude: marcadorDeBusqueda.longitud,
-        title: 'm' + 0
+      vm.marker1 = {
+        id: "id",
+        control: {},
+        coords:{
+          latitude: marcadorDeBusqueda.latitud,
+          longitude: marcadorDeBusqueda.longitud
+        },
+        options: {visible: true, draggable: true, labelAnchor: "100 0", labelClass: "marker-labels"}
       };
     }, 0);
   }
+
 
   function clone(obj) {
     var copy;

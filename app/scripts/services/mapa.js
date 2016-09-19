@@ -17,7 +17,7 @@ function Mapa() {
     centradoEnUbicacion: {longitud: 0, latitud: 0},
     marcadores: [],
     marcadorDeBusqueda: {},
-    eventosPorAccion: {click: clickMapFunction}
+    eventosPorAccion: {}
   };
   return {
     agregarEvento: agregarEvento,
@@ -30,7 +30,7 @@ function Mapa() {
   };
 
   function agregarEvento(evento, funcionAsociadaAEvento) {
-    mapa.eventosPorAccion.evento[evento] = funcionAsociadaAEvento;
+    mapa.eventosPorAccion[evento] = funcionAsociadaAEvento;
   }
 
   function agregarNuevoMarcador(marcador) {
@@ -55,11 +55,6 @@ function Mapa() {
 
   function centrarEn(ubicacion) {
     mapa.centradoEnUbicacion = {latitude: ubicacion.latitud, longitude:ubicacion.longitud};
-  }
-
-  function clickMapFunction(coord) {
-    mapa.marcadorDeBusqueda.longitud = coord.longitud;
-    mapa.marcadorDeBusqueda.latitud = coord.latitud;
   }
 
   function dameInstancia() {

@@ -10,61 +10,132 @@
 angular.module('wifindBarApp')
   .controller('MainCtrl', MainCtrl);
 
-MainCtrl.$inject = ['$scope', '$log', '$timeout', 'uiGmapGoogleMapApi', 'DistanciaUtils',
-  'GuiaDeBaresDeBuenosAires', 'DibujadorDeMapa', 'DibujadorDeBares', 'Mapa'];
+MainCtrl.$inject = ['$scope', '$log', '$timeout', 'uiGmapGoogleMapApi', 'DistanciaUtils', 'GuiaDeBaresDeBuenosAires'];
 
-function MainCtrl($scope, $log, $timeout, uiGmapGoogleMapApi, DistanciaUtils, GuiaDeBaresDeBuenosAires,
-                  DibujadorDeMapa, DibujadorDeBares, Mapa) {
+function MainCtrl($scope, $log, $timeout, uiGmapGoogleMapApi, DistanciaUtils, GuiaDeBaresDeBuenosAires) {
 
   var vm = this;
 
-  vm.bares = GuiaDeBaresDeBuenosAires.listaDeBares;
+  var delta = 0.05;
+  var id = 0;
+  var latCentro = -34.6277801;
+  var longCentro = -58.3909607;
+
   vm.buscarBaresCercanos = buscarBaresCercanos;
   vm.filtros = [{id: 1, descripcion: 'WiFi'}, {id: 2, descripcion: 'Enchufes'}];
-
-  DibujadorDeMapa.setVistaModel(vm);
-  Mapa.centrarEn({latitud: -34.6277801, longitud:-58.3909607});
-  DibujadorDeMapa.sobreescribirMapa();
-
-
-  vm.mapa = {
-    center: {latitude: -34.6277801, longitude: -58.3909607},
+  vm.map = {
+    center: {latitude: latCentro, longitude: longCentro},
+    control: {},
     zoom: 13,
-    events: {}
+    bounds: {},
+    events: {
+      click: clickMapFunction
+    }
   };
-  DibujadorDeMapa.sobreescribirMapa();
+  vm.markerControl = {};
+  vm.options = {
+    scrollwheel: false
+  };
+  vm.randomMarkers = [];
 
+  setMarker(latCentro, longCentro);
 
 
 // Get the bounds from the map once it's loaded
-  $scope.$watch('vm.mapa.bounds', function (nv, ov) {
+  $scope.$watch('vm.map.bounds', function (nv, ov) {
     // Only need to regenerate once
     if (nv != undefined && !ov.southwest && nv.southwest) {
       var markers = [];
       for (var i in vm.bares) {
         var bar = vm.bares[i];
-        DibujadorDeBares.dibujarBar(bar);
+        markers.push({
+          id: i,
+          latitude: bar.ubicacion.latitud,
+          longitude: bar.ubicacion.longitud,
+          title: 'm' + i,
+          icon: '/images/bar2.png',
+          options: {visible: false}
+        });
       }
-      DibujadorDeMapa.sobreescribirMapa();
+      vm.randomMarkers = markers;
     }
   }, true);
 
   function buscarBaresCercanos() {
-    debugger;
     vm.baresEncontrados = [];
     for (var i in vm.bares) {
       var bar = vm.bares[i];
       var distancia = DistanciaUtils.distancia(bar.ubicacion.latitud, bar.ubicacion.longitud,
         vm.marker.coords.latitude, vm.marker.coords.longitude);
-      if (distancia < 1000) { //comparing metres
+      if (vm.maxDistancia == undefined || vm.maxDistancia == "") {
+        vm.maxDistancia = 1000;
+      }
+      if (distancia < maxDistancia) { //comparing metres
         vm.baresEncontrados.push(bar);
+      }
+      for (var i in vm.randomMarkers) {
+        var marker = vm.randomMarkers[i];
+        if (marker.coords.latitude == bar.ubicacion.latitud && marker.coords.longitude == bar.ubicacion.longitud) {
+          marker.options.visible = true;
+        }
       }
     }
     console.log("cantidad de bares encontrados =" + vm.baresEncontrados.length);
   }
 
+  function createMarkerForBar(bar, id) {
+    vm.markers = [];
+    vm.markers.push({
+      id: id,
+      latitude: bar.ubicacion.latitud,
+      longitude: bar.ubicacion.longitud,
+      title: 'm' + id,
+      icon: '/images/bar2.png'
+    });
+  }
+
+  function clickMapFunction(map, eventName, args) {
+    var e = args[0];
+    setMarker(e.latLng.lat(), e.latLng.lng());
+  }
+
+
   function nextId() {
     id++;
     return id;
   }
+
+  function setMarker(lat, lng) {
+    vm.marker = undefined;
+    $timeout(function () {
+      vm.marker = {
+        id: nextId(),
+        control: {},
+        coords: {
+          latitude: lat,
+          longitude: lng
+        },
+        options: {visible: true, draggable: true},
+        events: {
+          dragend: function (marker, eventName, args) {
+            $log.log('marker dragend');
+            var lat = marker.getPosition().lat();
+            var lon = marker.getPosition().lng();
+            $log.log(lat);
+            $log.log(lon);
+
+            vm.marker.options = {
+              draggable: true,
+              //             labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+              labelAnchor: "100 0",
+              labelClass: "marker-labels"
+            };
+          }
+        }
+      };
+    }, 0);
+  }
+
+
+  vm.bares = GuiaDeBaresDeBuenosAires.listaDeBares;
 }

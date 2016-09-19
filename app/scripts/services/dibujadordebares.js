@@ -22,7 +22,7 @@ function DibujadorDeBares(Mapa) {
     var marcador = {
       longitud: bar.ubicacion.longitud,
       latitud: bar.ubicacion.latitud,
-      icono: "'/images/bar2.png'",
+      icono: "/images/bar2.png",
       tipo: "Bar"
     };
     Mapa.agregarNuevoMarcador(marcador);
