@@ -70,12 +70,12 @@ function MainCtrl($scope, $log, $timeout, uiGmapGoogleMapApi, DistanciaUtils, Gu
       if (vm.maxDistancia == undefined || vm.maxDistancia == "") {
         vm.maxDistancia = 1000;
       }
-      if (distancia < maxDistancia) { //comparing metres
+      if (distancia < vm.maxDistancia) { //comparing metres
         vm.baresEncontrados.push(bar);
       }
       for (var i in vm.randomMarkers) {
         var marker = vm.randomMarkers[i];
-        if (marker.coords.latitude == bar.ubicacion.latitud && marker.coords.longitude == bar.ubicacion.longitud) {
+        if (marker.latitude == bar.ubicacion.latitud && marker.longitude == bar.ubicacion.longitud) {
           marker.options.visible = true;
         }
       }
