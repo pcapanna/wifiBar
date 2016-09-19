@@ -25,11 +25,11 @@ function DibujadorDeBares(Mapa) {
       icono: "'/images/bar2.png'",
       tipo: "Bar"
     };
-    mapa.agregarNuevoMarcador(marcador);
+    Mapa.agregarNuevoMarcador(marcador);
   }
 
   function borrarBares(bar) {
     var tipoMarcador = "Bar";
-    mapa.borrarMarcadores(tipoMarcador);
+    Mapa.borrarMarcadores(tipoMarcador);
   }
 }

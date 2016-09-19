@@ -15,14 +15,18 @@ angular.module('wifindBarApp')
 function Mapa() {
   var mapa = {
     centradoEnUbicacion: {longitud: 0, latitud: 0},
-    marcadores: {listado: [], eventosPorAccion: {}},
-    eventosPorAccion: {}
+    marcadores: [],
+    marcadorDeBusqueda: {},
+    eventosPorAccion: {click: clickMapFunction}
   };
   return {
     agregarEvento: agregarEvento,
     agregarNuevoMarcador: agregarNuevoMarcador,
+    asignarMarcadorDeBusqueda: asignarMarcadorDeBusqueda,
     borrarMarcadores: borrarMarcadores,
-    centrarEn: centrarEn
+    centrarEn: centrarEn,
+    dameInstancia: dameInstancia,
+    quitarMarcadorDeBusqueda: quitarMarcadorDeBusqueda,
   };
 
   function agregarEvento(evento, funcionAsociadaAEvento) {
@@ -30,14 +34,18 @@ function Mapa() {
   }
 
   function agregarNuevoMarcador(marcador) {
-    mapa.marcadores.listado.push(marcador);
+    mapa.marcadores.push(marcador);
+  }
+
+  function asignarMarcadorDeBusqueda(marcador){
+    mapa.marcadorDeBusqueda = marcador;
   }
 
   function borrarMarcadores(tipoMarcador) {
     var i = 0;
-    while (i < mapa.marcadores.listado.length) {
-      if (mapa.marcadores.listado[i].tipo === "Bar") {
-        mapa.marcadores.listado.splice(i, 1);
+    while (i < mapa.marcadores.length) {
+      if (mapa.marcadores.listado[i].tipo === tipoMarcador) {
+        mapa.marcadores.splice(i, 1);
       }
       else {
         ++i;
@@ -46,7 +54,19 @@ function Mapa() {
   }
 
   function centrarEn(ubicacion) {
-    mapa.centradoEnUbicacion = ubicacion;
+    mapa.centradoEnUbicacion = {latitude: ubicacion.latitud, longitude:ubicacion.longitud};
+  }
+
+  function clickMapFunction(coord) {
+    mapa.marcadorDeBusqueda.longitud = coord.longitud;
+    mapa.marcadorDeBusqueda.latitud = coord.latitud;
+  }
+
+  function dameInstancia() {
+    return mapa;
+  }
+  function quitarMarcadorDeBusqueda() {
+    mapa.marcadorDeBusqueda = null;
   }
 }
 
