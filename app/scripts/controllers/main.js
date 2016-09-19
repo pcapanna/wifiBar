@@ -20,6 +20,8 @@ function MainCtrl($scope, $log, $timeout, uiGmapGoogleMapApi, DistanciaUtils, Gu
   var id = 0;
   var latCentro = -34.6277801;
   var longCentro = -58.3909607;
+  
+  vm.backUpMarcadores;
 
   vm.buscarBaresCercanos = buscarBaresCercanos;
   vm.filtros = [{id: 1, descripcion: 'WiFi'}, {id: 2, descripcion: 'Enchufes'}];
@@ -58,10 +60,13 @@ function MainCtrl($scope, $log, $timeout, uiGmapGoogleMapApi, DistanciaUtils, Gu
         });
       }
       vm.randomMarkers = markers;
+      vm.backUpMarcadores = markers;
+
     }
   }, true);
 
   function buscarBaresCercanos() {
+    var marcadores = [];
     vm.baresEncontrados = [];
     for (var i in vm.bares) {
       var bar = vm.bares[i];
@@ -73,13 +78,15 @@ function MainCtrl($scope, $log, $timeout, uiGmapGoogleMapApi, DistanciaUtils, Gu
       if (distancia < vm.maxDistancia) { //comparing metres
         vm.baresEncontrados.push(bar);
       }
-      for (var i in vm.randomMarkers) {
-        var marker = vm.randomMarkers[i];
-        if (marker.latitude == bar.ubicacion.latitud && marker.longitude == bar.ubicacion.longitud) {
+      for (var i in vm.backUpMarcadores) {
+        var marker = vm.backUpMarcadores[i];
+        if (marker.latitude == bar.ubicacion.latitud && marker.longitude == bar.ubicacion.longitud && distancia < vm.maxDistancia) {
           marker.options.visible = true;
+	  marcadores.push(marker);
         }
       }
     }
+      vm.randomMarkers = marcadores;
     console.log("cantidad de bares encontrados =" + vm.baresEncontrados.length);
   }
 
