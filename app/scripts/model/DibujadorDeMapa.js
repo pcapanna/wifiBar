@@ -12,13 +12,13 @@ var DibujadorDeMapa = (function () {
             events: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ? {} : vm.viejoMapa.events
         };
         if (this.mapa == undefined || mapa.marcadores != this.mapa.marcadores) {
-            sobreescribirMarcadores(vm, mapa.marcadores);
+            this.sobreescribirMarcadores(vm, mapa.marcadores);
         }
         if (this.mapa == undefined || mapa.marcadorDeBusqueda != this.mapa.marcadorDeBusqueda) {
-            sobreescribirMarcadorDeBusqueda(vm, mapa.marcadorDeBusqueda);
+            this.sobreescribirMarcadorDeBusqueda(vm, mapa.marcadorDeBusqueda);
         }
         if (this.mapa == undefined || mapa.eventosPorAccion != this.mapa.eventosPorAccion) {
-            sobreescribirEventosPorAccion(vm, mapa.eventosPorAccion);
+            this.sobreescribirEventosPorAccion(vm, mapa.eventosPorAccion);
         }
         vm.mapa = clone(mapa);
     };
@@ -34,7 +34,7 @@ var DibujadorDeMapa = (function () {
         for (var nombreDeEvento in eventosPorAccion) {
             switch (nombreDeEvento) {
                 case "click":
-                    vm.mapa.events["click"] = clickMapFunction;
+                    vm.mapa.events["click"] = this.clickMapFunction;
                     break;
                 default:
                     break;
