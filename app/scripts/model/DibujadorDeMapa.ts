@@ -5,7 +5,7 @@ import {Ubicacion} from "./Ubicacion";
 export class DibujadorDeMapa {
   mapa:Mapa;
 
-  sobreescribirMapa(vm, mapa: Mapa) {
+  public sobreescribirMapa(vm, mapa: Mapa) {
     vm.mapa = {
       center: mapa.centradoEnUbicacion,
       control: (vm.viejoMapa == undefined || vm.viejoMapa.control == undefined) ? {} : vm.viejoMapa.control,
@@ -28,69 +28,67 @@ export class DibujadorDeMapa {
 
     vm.mapa = clone(mapa);
   }
-}
 
-
-function clickMapFunction(map, eventName, args) {
-  var e = args[0];
-  var coords : Ubicacion = new Ubicacion(e.latLng.lat(), e.latLng.lng());
-  this.mapa.eventosPorAccion["click"](coords);
-}
-
-function sobreescribirEventosPorAccion(vm, eventosPorAccion) {
-  if (eventosPorAccion == undefined) {
-    return;
+  private clickMapFunction(map, eventName, args) {
+    var e = args[0];
+    var coords : Ubicacion = new Ubicacion(e.latLng.lat(), e.latLng.lng());
+    this.mapa.eventosPorAccion["click"](coords);
   }
-  for (var nombreDeEvento in eventosPorAccion) {
-    switch (nombreDeEvento) {
-      case "click":
-        vm.mapa.events["click"] = clickMapFunction;
-        break;
-      default:
-        break;
+
+  private sobreescribirEventosPorAccion(vm, eventosPorAccion) {
+    if (eventosPorAccion == undefined) {
+      return;
+    }
+    for (var nombreDeEvento in eventosPorAccion) {
+      switch (nombreDeEvento) {
+        case "click":
+          vm.mapa.events["click"] = clickMapFunction;
+          break;
+        default:
+          break;
+      }
     }
   }
-}
 
-function sobreescribirMarcadores(vm, marcadores) {
-  if (vm == undefined) {
-    return;
+  private sobreescribirMarcadores(vm, marcadores) {
+    if (vm == undefined) {
+      return;
+    }
+    vm.markers = undefined;
+
+    var vmMarkers = [];
+    for (var i in marcadores) {
+      var marcador = marcadores[i];
+      var vmMarker = {
+        id: i,
+        latitude: marcador.latitud,
+        longitude: marcador.longitud,
+        title: 'm' + i,
+        icon: marcador.icono
+      };
+      vmMarkers.push(vmMarker);
+    }
+    vm.markers = vmMarkers;
   }
-  vm.markers = undefined;
 
-  var vmMarkers = [];
-  for (var i in marcadores) {
-    var marcador = marcadores[i];
-    var vmMarker = {
-      id: i,
-      latitude: marcador.latitud,
-      longitude: marcador.longitud,
-      title: 'm' + i,
-      icon: marcador.icono
-    };
-    vmMarkers.push(vmMarker);
+  private sobreescribirMarcadorDeBusqueda(vm, marcadorDeBusqueda) {
+    if (marcadorDeBusqueda == undefined) {
+      return;
+    }
+    vm.marker = undefined;
+    vm.$timeout(function () {
+      vm.marker1 = {
+        id: "id",
+        control: {},
+        coords: {
+          latitude: marcadorDeBusqueda.latitud,
+          longitude: marcadorDeBusqueda.longitud
+        },
+        options: {visible: true, draggable: true, labelAnchor: "100 0", labelClass: "marker-labels"}
+      };
+    }, 0);
   }
-  vm.markers = vmMarkers;
 }
-
-function sobreescribirMarcadorDeBusqueda(vm, marcadorDeBusqueda) {
-  if (marcadorDeBusqueda == undefined) {
-    return;
-  }
-  vm.marker = undefined;
-  vm.$timeout(function () {
-    vm.marker1 = {
-      id: "id",
-      control: {},
-      coords: {
-        latitude: marcadorDeBusqueda.latitud,
-        longitude: marcadorDeBusqueda.longitud
-      },
-      options: {visible: true, draggable: true, labelAnchor: "100 0", labelClass: "marker-labels"}
-    };
-  }, 0);
-}
-
 
 function clone(obj) {
   var copy;
