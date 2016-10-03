@@ -1,4 +1,5 @@
 import {Mapa} from "./Mapa";
+import {Ubicacion} from "./Ubicacion";
 
 
 export class DibujadorDeMapa {
@@ -32,7 +33,7 @@ export class DibujadorDeMapa {
 
 function clickMapFunction(map, eventName, args) {
   var e = args[0];
-  var coords = {longitud: e.latLng.lat(), latitud: e.latLng.lng()};
+  var coords : Ubicacion = new Ubicacion(e.latLng.lat(), e.latLng.lng());
   this.mapa.eventosPorAccion["click"](coords);
 }
 

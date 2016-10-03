@@ -2,24 +2,30 @@ import {Ubicacion} from "./Ubicacion";
 import {Marcador} from "./Marcador";
 
 export class Mapa {
-  centradoEnUbicacion:Ubicacion;
-  marcadores:Marcador[];
-  marcadorDeBusqueda:Marcador;
-  eventosPorAccion:{};
 
-  agregarEvento(evento:string, funcionAsociadaAEvento:void) {
+  private static _instance:Mapa = new Mapa();
+  public centradoEnUbicacion:Ubicacion;
+  public marcadores:Marcador[];
+  public marcadorDeBusqueda:Marcador;
+  public eventosPorAccion:{};
+
+  public static getInstance(){
+    return Mapa._instance;
+  }
+
+  public agregarEvento(evento:string, funcionAsociadaAEvento:void) {
     this.eventosPorAccion[evento] = funcionAsociadaAEvento;
   }
 
-  agregarNuevoMarcador(marcador:Marcador) {
+  public agregarNuevoMarcador(marcador:Marcador) {
     this.marcadores.push(marcador);
   };
 
-  asignarMarcadorDeBusqueda(marcador:Marcador) {
+  public asignarMarcadorDeBusqueda(marcador:Marcador) {
     this.marcadorDeBusqueda = marcador;
   };
 
-  borrarMarcadores(tipoMarcador:string) {
+  public borrarMarcadores(tipoMarcador:string) {
     var i = 0;
     while (i < this.marcadores.length) {
       if (this.marcadores[i].tipo === tipoMarcador) {
@@ -31,11 +37,11 @@ export class Mapa {
     }
   };
 
-  centrarEn(ubicacion:Ubicacion) {
+  public centrarEn(ubicacion:Ubicacion) {
     this.centradoEnUbicacion = ubicacion;
   }
 
-  quitarMarcadorDeBusqueda() {
+  public quitarMarcadorDeBusqueda() {
     this.marcadorDeBusqueda = null;
   };
 }

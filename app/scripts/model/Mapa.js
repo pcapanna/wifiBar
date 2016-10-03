@@ -2,6 +2,9 @@
 var Mapa = (function () {
     function Mapa() {
     }
+    Mapa.getInstance = function () {
+        return Mapa._instance;
+    };
     Mapa.prototype.agregarEvento = function (evento, funcionAsociadaAEvento) {
         this.eventosPorAccion[evento] = funcionAsociadaAEvento;
     };
@@ -32,6 +35,7 @@ var Mapa = (function () {
         this.marcadorDeBusqueda = null;
     };
     ;
+    Mapa._instance = new Mapa();
     return Mapa;
 }());
 exports.Mapa = Mapa;

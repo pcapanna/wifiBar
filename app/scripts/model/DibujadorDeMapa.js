@@ -1,4 +1,5 @@
 "use strict";
+var Ubicacion_1 = require("./Ubicacion");
 var DibujadorDeMapa = (function () {
     function DibujadorDeMapa() {
     }
@@ -26,7 +27,7 @@ var DibujadorDeMapa = (function () {
 exports.DibujadorDeMapa = DibujadorDeMapa;
 function clickMapFunction(map, eventName, args) {
     var e = args[0];
-    var coords = { longitud: e.latLng.lat(), latitud: e.latLng.lng() };
+    var coords = new Ubicacion_1.Ubicacion(e.latLng.lat(), e.latLng.lng());
     this.mapa.eventosPorAccion["click"](coords);
 }
 function sobreescribirEventosPorAccion(vm, eventosPorAccion) {

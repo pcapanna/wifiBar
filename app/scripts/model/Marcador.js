@@ -1,6 +1,9 @@
 "use strict";
 var Marcador = (function () {
-    function Marcador() {
+    function Marcador(ubicacion, iconoUrl, tipo) {
+        this.ubicacion = ubicacion;
+        this.iconoUrl = iconoUrl;
+        this.tipo = tipo;
     }
     return Marcador;
 }());
