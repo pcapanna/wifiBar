@@ -1,8 +1,29 @@
 import {Ubicacion} from "./Ubicacion";
 
 export class Bar {
-  ubicacion: Ubicacion;
-  constructor(ubicacion: Ubicacion) {
-    this.ubicacion = ubicacion;
+
+  // COLABORADORES INTERNOS
+  nombre: string;
+  direccion: Ubicacion;
+  //horario: ;
+
+  // CONSTRUCTOR
+  constructor(nombre: string, direccion: Ubicacion/*, horario:*/) {
+    this.nombre = nombre;
+    this.direccion = direccion;
+    //this.horario = horario;
   }
+
+  // MENSAJES QUE RESPONDE
+  public getNombre(): string{
+    return this.nombre;
+  }
+
+  public getDireccion(): Ubicacion{
+    return this.direccion;
+  }
+
+  /*public getHorario(){
+    return this.horario;
+  }*/
 }
