@@ -3,8 +3,8 @@ import {Ubicacion} from "./Ubicacion";
 export class Bar {
 
   // COLABORADORES INTERNOS
-  nombre: string;
-  direccion: Ubicacion;
+  private nombre: string;
+  private direccion: Ubicacion;
   //horario: ;
 
   // CONSTRUCTOR

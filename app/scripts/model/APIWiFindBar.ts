@@ -7,13 +7,13 @@ import {GuiaDeBares} from "./GuiaDeBares";
 import {GuiaDetalleDeBares} from "./GuiaDetalleDeBares";
 
 
-function buscar(unFiltro: Filtro): Bar[] {
+function buscar(unFiltro:Filtro):Bar[] {
 
-  var unaGuiaDeDetalles: GuiaDetalleDeBares;
-  var unaGuiaDeBares: GuiaDeBares;          // las guias y el dibujador deberian ser globales.... no estoy segura de como hacer eso
-  var unDibujador: DibujadorEnMapa;
-  var unFiltrador = new Filtrador(unFiltro,unaGuiaDeDetalles);
-  var unBuscador = new BuscadorDeBares(unaGuiaDeBares,unFiltrador,unDibujador);
+  var unaGuiaDeDetalles:GuiaDetalleDeBares;
+  var unaGuiaDeBares:GuiaDeBares;          // las guias y el dibujador deberian ser globales.... no estoy segura de como hacer eso
+  var unDibujador:DibujadorEnMapa;
+  var unFiltrador = new Filtrador(unFiltro, unaGuiaDeDetalles);
+  var unBuscador = new BuscadorDeBares(unaGuiaDeBares, unFiltrador, unDibujador);
 
   return unBuscador.buscarBares();
 

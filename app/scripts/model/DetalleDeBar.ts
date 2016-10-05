@@ -4,9 +4,13 @@ import {Ubicacion} from "./Ubicacion";
 export class DetalleDeBar{
 
   // COLABORADORES INTERNOS
-  bar: Bar;
-  calificacionProcesadaEnchufes: number;
-  calificacionProcesadaWifi: number;
+  private bar: Bar;
+  private calificacionProcesadaEnchufes: number;
+  private calificacionProcesadaWifi: number;
+
+  // QUE PASA SI NO TIENE CALIFICACIONES EN ALGUNO DE ESTOS?
+  // TODO: FALTA MODELAR PROPIEDADES CALIFICABLES. UN DETALLE BAR DEBERIA TENER UN DICCIONARIO DE
+  // TODO: PROPIEDAD -> CALIFICACION (Ej.: {enchufe: 3, wifi: 2, buenPrecio: 5})
 
   // CONSTRUCTOR
   constructor(unBar: Bar){
@@ -15,31 +19,31 @@ export class DetalleDeBar{
 
   // MENSAJES QUE RESPONDE
 
-  setCalificacionProcesadaEnchufes(calificacion: number): void{
+  public setCalificacionProcesadaEnchufes(calificacion: number): void{
     this.calificacionProcesadaEnchufes = calificacion;
   }
 
-  setCalificacionProcesadaWifi(calificacion: number): void{
+  public setCalificacionProcesadaWifi(calificacion: number): void{
     this.calificacionProcesadaWifi = calificacion;
   }
 
-  getCalificacionEnchufes(): number{
+  public getCalificacionEnchufes(): number{
     return this.calificacionProcesadaEnchufes;
   }
 
-  getCalificacionWifi(): number{
+  public getCalificacionWifi(): number{
     return this.calificacionProcesadaWifi;
   }
 
-  getBar(): Bar{
+  public getBar(): Bar{
     return this.bar;
   }
 
-  getNombreBar(): string{
+  public getNombreBar(): string{
     return (this.bar).getNombre();
   }
 
-  getDireccionBar(): Ubicacion{
+  public getDireccionBar(): Ubicacion{
     return (this.bar).getDireccion();
   }
 

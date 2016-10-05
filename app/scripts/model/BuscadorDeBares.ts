@@ -6,9 +6,9 @@ import {DibujadorEnMapa} from "./DibujadorEnMapa";
 export class BuscadorDeBares {
 
   // COLABORADORES INTERNOS
-  guiaDebares: GuiaDeBares;
-  filtrador: Filtrador;
-  dibujador: DibujadorEnMapa;
+  private guiaDebares: GuiaDeBares;
+  private filtrador: Filtrador;
+  private dibujador: DibujadorEnMapa;
 
   // CONSTRUCTOR
   constructor(guiaDeBares: GuiaDeBares, filtrador: Filtrador, dibujador: DibujadorEnMapa) {
@@ -20,7 +20,7 @@ export class BuscadorDeBares {
   // MENSAJES QUE RESPONDE
 
   buscarBares(): Bar[] {
-    var bares = this.guiaDebares.getBares();
+    var bares : Bar[] = this.guiaDebares.getBares();
     bares = this.filtrador.filtrar(bares);
     this.dibujador.dibujarBaresEnMapa(bares);
     return bares;

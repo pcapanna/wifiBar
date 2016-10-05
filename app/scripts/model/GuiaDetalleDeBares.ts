@@ -4,7 +4,7 @@ import {DetalleDeBar} from "./DetalleDeBar";
 export class GuiaDetalleDeBares {
 
   // COLABORADORES INTERNOS
-  detalles: DetalleDeBar[];
+  private detalles: DetalleDeBar[];
 
   // CONSTRUCTOR
   constructor(detalles: DetalleDeBar[]){
@@ -13,12 +13,11 @@ export class GuiaDetalleDeBares {
 
   // MENSAJES QUE RESPONDE
 
-  addDetalle(detalle: DetalleDeBar): void{
+  public addDetalle(detalle: DetalleDeBar): void{
     (this.detalles).push(detalle);
   }
 
-  dameDetalleDeBar(unBar: Bar): DetalleDeBar{
-
+  public dameDetalleDeBar(unBar: Bar): DetalleDeBar{
     for (var detalle of this.detalles){
       if (detalle.getBar() == unBar)
         return detalle;

@@ -6,8 +6,8 @@ import {DetalleDeBar} from "./DetalleDeBar";
 export class Filtrador{
 
   // COLABORADORES INTERNOS
-  filtro: Filtro;
-  guiaDeDetalles: GuiaDetalleDeBares; // esta guia deberia ser global a todos
+  private filtro: Filtro;
+  private guiaDeDetalles: GuiaDetalleDeBares; // esta guia deberia ser global a todos
 
   // CONSTRUCTOR
   constructor(filtro: Filtro, guia: GuiaDetalleDeBares){
@@ -16,10 +16,10 @@ export class Filtrador{
   }
 
   // MENSAJES QUE RESPONDE
-  filtrar(unaColeccionDeBares: Bar[]): Bar[]{
+  public filtrar(unaColeccionDeBares: Bar[]): Bar[]{
 
     var detalles: DetalleDeBar[] = [];
-    for (var bar of unaColeccionDeBares){
+    for (let bar of unaColeccionDeBares){
       detalles.push(this.guiaDeDetalles.dameDetalleDeBar(bar));
     }
 

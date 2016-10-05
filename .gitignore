@@ -4,4 +4,6 @@ bower_components
 .tmp
 .sass-cache
 .idea
+model/*.js
+model/*.js.map
 

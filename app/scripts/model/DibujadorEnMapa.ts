@@ -4,7 +4,7 @@ import {Mapa} from "./Mapa"
 export class DibujadorEnMapa{
 
   // COLABORADORES INTERNOS
-  mapa: Mapa;
+  private mapa: Mapa;
 
   // CONSTRUCTOR
   constructor(unMapa: Mapa){
@@ -12,7 +12,7 @@ export class DibujadorEnMapa{
   }
 
   // MENSAJES QUE RESPONDE
-  dibujarBaresEnMapa(unaColeccionDeBares: Bar[]): void{
-    // implementame
+  public dibujarBaresEnMapa(unaColeccionDeBares: Bar[]): void{
+    // TODO: implementame
   }
 }
