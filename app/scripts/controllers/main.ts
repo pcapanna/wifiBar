@@ -1,155 +1,152 @@
-import {Ubicacion} from '../model/Ubicacion';
-import {Bar} from '../model/Bar';
-import {Marcador} from '../model/Marcador';
+/// <reference path="../app.ts" />
 
-/**
- * @ngdoc function
- * @name wifindBarApp.controller:MainCtrl
- * @description
- * # MainCtrl
- * Controller of the wifindBarApp
- */
+'use strict';
+import {Filtro, FiltroNull, FiltroDecorator} from "../model/Filtro";
+import {CriterioDeAceptacion, CriterioDeAceptacionDistanciaMaxima} from "../model/CriterioDeAceptacion";
+import {Ubicacion} from "../model/Ubicacion";
+import {APIWiFindBar} from "../model/APIWiFindBar";
+import {Bar} from "../model/Bar";
+import {GuiaDeBares} from "../model/GuiaDeBares";
+import {GuiaDetalleDeBares} from "../model/GuiaDetalleDeBares";
+import {DetalleDeBar} from "../model/DetalleDeBar";
+import {DibujadorEnMapa} from "../model/DibujadorEnMapa";
 
-var angular;
-angular.module('wifindBarApp')
-  .controller('MainCtrl', MainCtrl);
+module wifindBarApp {
+  export interface IMainScope extends ng.IScope {
+    awesomeThings:any[];
+  }
 
-// MainCtrl.$inject = ['$scope', '$log', '$timeout', 'uiGmapGoogleMapApi', 'DistanciaUtils',
-//   'GuiaDeBaresDeBuenosAires', 'Mapa', 'DibujadorDeBares', 'DibujadorDeMapa'];
+  export class MainCtrl {
 
-function MainCtrl($scope, $log, $timeout, uiGmapGoogleMapApi, DistanciaUtils, GuiaDeBaresDeBuenosAires,
-                  Mapa, DibujadorDeBares, DibujadorDeMapa) {
+    private DistanciaUtils;
+    // private secuenciaId:number = 0;
+    private bares;
+    private ubicacionOrigen;
+    public marker;
+    private backUpMarcadores = [];
+    public marcadores = [];
+    public markerControl = {};
+    public options = {
+      scrollwheel: false
+    };
+    public maxDistanciaMetros;
+    public filtros = [{id: 1, descripcion: 'WiFi'}, {id: 2, descripcion: 'Enchufes'}];
+    public map = {
+      center: {latitude: -34.6277801, longitude: -58.3909607},
+      control: {},
+      zoom: 13,
+      bounds: {},
+      events: {
+        click: this.clickMapFunction
+      }
+    };
+    private $parent;
 
-  var vm = this;
-  Mapa.asignarMarcadorDeBusqueda
-
-  var delta = 0.05;
-  var id = 0;
-  var latCentro = -34.6277801;
-  var longCentro = -58.3909607;
-
-  vm.backUpMarcadores;
-
-  vm.buscarBaresCercanos = buscarBaresCercanos;
-  vm.filtros = [{id: 1, descripcion: 'WiFi'}, {id: 2, descripcion: 'Enchufes'}];
-  vm.map = {
-    center: {latitude: latCentro, longitude: longCentro},
-    control: {},
-    zoom: 13,
-    bounds: {},
-    events: {
-      click: clickMapFunction
+    private clickMapFunction(map, eventName, args) {
+      var e = args[0];
+      this.$parent.vm.setMarcadorDeUbicacion(e.latLng.lat(), e.latLng.lng());
     }
-  };
-  vm.markerControl = {};
-  vm.options = {
-    scrollwheel: false
-  };
-  vm.randomMarkers = [];
 
-  setMarker(latCentro, longCentro);
-
-
-// Get the bounds from the map once it's loaded
-  $scope.$watch('vm.map.bounds', function (nv, ov) {
-    // Only need to regenerate once
-    if (nv != undefined && !ov.southwest && nv.southwest) {
-      var markers = [];
-      for (var i in vm.bares) {
-        var bar = vm.bares[i];
-        markers.push({
-          id: i,
-          latitude: bar.ubicacion.latitud,
-          longitude: bar.ubicacion.longitud,
-          title: 'm' + i,
-          icon: '/images/bar2.png',
-          options: {visible: false}
-        });
-      }
-      vm.randomMarkers = markers;
-      vm.backUpMarcadores = markers;
-
-    }
-  }, true);
-
-  function buscarBaresCercanos() {
-    var marcadores = [];
-    vm.baresEncontrados = [];
-    for (var i in vm.bares) {
-      var bar = vm.bares[i];
-      var distancia = DistanciaUtils.distancia(bar.ubicacion.latitud, bar.ubicacion.longitud,
-        vm.marker.coords.latitude, vm.marker.coords.longitude);
-      if (vm.maxDistancia == undefined || vm.maxDistancia == "") {
-        vm.maxDistancia = 1000;
-      }
-      if (distancia < vm.maxDistancia) { //comparing metres
-        vm.baresEncontrados.push(bar);
-      }
-      for (var i in vm.backUpMarcadores) {
-        var marker = vm.backUpMarcadores[i];
-        if (marker.latitude == bar.ubicacion.latitud && marker.longitude == bar.ubicacion.longitud && distancia < vm.maxDistancia) {
-          marker.options.visible = true;
-          marcadores.push(marker);
-        }
-      }
-    }
-    vm.randomMarkers = marcadores;
-    console.log("cantidad de bares encontrados =" + vm.baresEncontrados.length);
-  }
-
-  function createMarkerForBar(bar, id) {
-    vm.markers = [];
-    vm.markers.push({
-      id: id,
-      latitude: bar.ubicacion.latitud,
-      longitude: bar.ubicacion.longitud,
-      title: 'm' + id,
-      icon: '/images/bar2.png'
-    });
-  }
-
-  function clickMapFunction(map, eventName, args) {
-    var e = args[0];
-    setMarker(e.latLng.lat(), e.latLng.lng());
-  }
-
-
-  function nextId() {
-    id++;
-    return id;
-  }
-
-  function setMarker(lat, lng) {
-    vm.marker = undefined;
-    $timeout(function () {
-      vm.marker = {
-        id: nextId(),
-        control: {},
-        coords: {
-          latitude: lat,
-          longitude: lng
-        },
-        options: {visible: true, draggable: true},
-        events: {
-          dragend: function (marker, eventName, args) {
-            $log.log('marker dragend');
-            var lat = marker.getPosition().lat();
-            var lon = marker.getPosition().lng();
-            $log.log(lat);
-            $log.log(lon);
-
-            vm.marker.options = {
-              draggable: true,
-              //             labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
-              labelAnchor: "100 0",
-              labelClass: "marker-labels"
-            };
+    private setMarcadorDeUbicacion(latitud, longitud):void {
+      this.ubicacionOrigen = new Ubicacion(latitud, longitud);
+      this.marker = undefined;
+      setTimeout(() => {
+        this.marker = {
+          id: 0,
+          control: {},
+          coords: {
+            latitude: this.ubicacionOrigen.getLatitud(),
+            longitude: this.ubicacionOrigen.getLongittud()
+          },
+          options: {visible: true, draggable: true},
+          events: {
+            dragend: function (marker, eventName, args) {
+              var lat = marker.getPosition().lat();
+              var lon = marker.getPosition().lng();
+              this.marker.options = {
+                draggable: true,
+                //             labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
+                labelAnchor: "100 0",
+                labelClass: "marker-labels"
+              };
+            }
           }
-        }
+        };
+        this.$scope.$apply();
+      }, 0);
+    }
+
+    constructor(private $scope:IMainScope, $timeout, uiGmapGoogleMapApi, DistanciaUtils, GuiaDeBaresDeBuenosAires) {
+      var vm = this;
+      var delta = 0.05;
+
+      this.$scope = $scope;
+
+      vm.markerControl = {};
+      vm.options = {
+        scrollwheel: false
       };
-    }, 0);
+
+      vm.marcadores = [];
+
+      vm.setMarcadorDeUbicacion(this.map.center.latitude, this.map.center.longitude);
+
+      vm.cargarGuiaDeBaresRandom();
+      vm.cargarGuiaDetalleDeBaresRandom();
+    }
+
+
+    private estaCalificadoRandom(){
+      let randomFrom1To3 = Math.floor(Math.random()*2) +1;
+      return (randomFrom1To3!==1?false:true)
+    }
+
+    private cargarGuiaDeBaresRandom() {
+      var latCentro:number = -34.6277801;
+      var longCentro:number = -58.3909607;
+      var delta:number = 0.05;
+
+      var guiaDeBares = GuiaDeBares.getInstance();
+      for (var i = 1; i < 200; i++) {
+        let idKey:number = i;
+        let latitud = (latCentro - delta) + (Math.random() * (2 * delta));
+        let longitud = (longCentro - delta) + (Math.random() * (2 * delta));
+
+        let bar:Bar = new Bar("Bar " + idKey, new Ubicacion(latitud, longitud));
+        guiaDeBares.addBar(bar);
+      }
+    };
+
+    private cargarGuiaDetalleDeBaresRandom() {
+      var guiaDetalleDeBares = GuiaDetalleDeBares.getInstance();
+      var guiaDeBares = GuiaDeBares.getInstance();
+      for (var bar of guiaDeBares.getBares()){
+        let detalleDeBar:DetalleDeBar = new DetalleDeBar(bar);
+
+        if (this.estaCalificadoRandom()){
+          let calificacionEnchufes = Math.floor(Math.random() * 5) + 1;
+          detalleDeBar.setCalificacionProcesadaEnchufes(calificacionEnchufes);
+        }
+        if (this.estaCalificadoRandom()){
+          let calificacionWifi = Math.floor(Math.random() * 5) + 1;
+          detalleDeBar.setCalificacionProcesadaWifi(calificacionWifi);
+        }
+      }
+    };
+
+    public buscarBaresCercanos():void {
+      var filtro:Filtro = new FiltroNull();
+      var criterioMaxDistancia:CriterioDeAceptacion =
+        new CriterioDeAceptacionDistanciaMaxima(this.maxDistanciaMetros, this.ubicacionOrigen);
+      filtro = new FiltroDecorator(filtro, criterioMaxDistancia);
+
+      var api = APIWiFindBar;
+      var baresEncontrados:Bar[] = api.buscar(filtro, this);
+    }
+
+
   }
-
-
-  vm.bares = GuiaDeBaresDeBuenosAires.listaDeBares;
 }
+
+angular.module('wifindBarApp')
+  .controller('MainCtrl', wifindBarApp.MainCtrl);

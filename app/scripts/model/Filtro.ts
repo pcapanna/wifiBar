@@ -1,12 +1,18 @@
 import {Bar} from "./Bar";
 import {DetalleDeBar} from "./DetalleDeBar";
 import {EstrategiaDeComparacion} from "./EstrategiaDeComparacion";
+import {CriterioDeAceptacion} from "./CriterioDeAceptacion";
 
 export abstract class Filtro {
   public abstract filtrar(unaColeccionDeDetalles:DetalleDeBar[]):Bar[];
 }
 
-class FiltroNull extends Filtro {
+export class FiltroNull extends Filtro {
+
+  // CONSTRUCTOR
+  constructor() {
+    super();
+  }
 
   // MENSAJES QUE RESPONDE
   public filtrar(unaColeccionDeDetalles:DetalleDeBar[]):Bar[] {
@@ -18,14 +24,14 @@ class FiltroNull extends Filtro {
   }
 }
 
-abstract class FiltroPorCaracteristica extends Filtro {
+export class FiltroDecorator extends Filtro {
 
   // COLABORADORES INTERNOS
   private filtroComponente:Filtro;
-  private estrategia:EstrategiaDeComparacion;
+  private estrategia:CriterioDeAceptacion;
 
   // CONSTRUCTOR
-  constructor(unFiltroComponente:Filtro, unaEstrategia:EstrategiaDeComparacion) {
+  constructor(unFiltroComponente:Filtro, unaEstrategia:CriterioDeAceptacion) {
     super();
     this.filtroComponente = unFiltroComponente;
     this.estrategia = unaEstrategia;
@@ -35,7 +41,7 @@ abstract class FiltroPorCaracteristica extends Filtro {
   public filtrar(unaColeccionDeDetalles:DetalleDeBar[]) {
     var detallesFiltrados:DetalleDeBar[] = [];
     for (var detalle of unaColeccionDeDetalles) {
-      if (this.estrategia.compararSegun(detalle))
+      if (this.estrategia.acepta(detalle))
         detallesFiltrados.push(detalle);
     }
 
@@ -43,14 +49,6 @@ abstract class FiltroPorCaracteristica extends Filtro {
   }
 }
 
-class FiltroPorDistancia extends FiltroPorCaracteristica {
-
-}
-
-class FiltroPorEnchufes extends FiltroPorCaracteristica {
-
-}
-
-class FiltroPorWifi extends FiltroPorCaracteristica {
-
-}
+// wifindBarApp.component('Filtro', Filtro);
+// wifindBarApp.component('FiltroNull', FiltroNull);
+// wifindBarApp.component('FiltroPorCaracteristica', FiltroPorCaracteristica);

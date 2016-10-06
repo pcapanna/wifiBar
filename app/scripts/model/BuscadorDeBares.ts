@@ -19,10 +19,10 @@ export class BuscadorDeBares {
 
   // MENSAJES QUE RESPONDE
 
-  buscarBares(): Bar[] {
+  buscarBares(vm): Bar[] {
     var bares : Bar[] = this.guiaDebares.getBares();
     bares = this.filtrador.filtrar(bares);
-    this.dibujador.dibujarBaresEnMapa(bares);
+    this.dibujador.dibujarBaresEnMapa(bares, vm);
     return bares;
   }
 

@@ -1,8 +1,0 @@
-Las tareas no fueron suficientemente bien divididas. Se nota varias cosas.
-1 No entender el problema que se quiere resolver provoca definir tareas que son confusas y no ayudan. Es como si los problemas que se tienen que resolver constituyen un conjunto de la solución que no está definido en ninguna tarea en particular, sino en partes de muchas tareas. Por esto resulta muy dificil dar como solucionada 1 tarea y más aún que una sóla persona deba resolverla.
-2 No hay practicamente ninguna tarea de construcción de vistas o modulos de una vista. En muchas tareas se habla de la existencia de, pero en ninguna se define la construcción manifiestamente. 
-3 Hubiese sido bastante más probechoso no definir tareas de una segunda instancia sin haber terminado la primera. Esta trampa forzada por los docentes por motivos que no entiendo va a ser un problema.
-4 Haber tenido una reunión real de definición clara de tareas y puntaje entre todos los miembros del equipo seguramente nos hubiera dado mejor estimación de tiempos. La estimación esta sobrevaluada enormemente.
-5 Definir el modelo antes que usarlo no tiene ningún senido. Es un desperdicio de tiempo. Primero se debe estudiar bien la comunicación con la API de google maps para entender bien que modelado es más eficiente. De que me sirve definir "ubicacion" de un bar como una dirección si tengo que llamar a la API de google maps para geolocalizar esa ubicación cada vez que quiera medir una distancia, Claramente en ese caso preferiría definir ubicación como una geolocalizacion. El tema es que el modelo no es sólo lo que está en mi aplicación. Sino es la union entre lo que modelo en mi aplicación con el modelo de google. Necesito conocer entonces lo segundo para definir lo primero más correctamente. 
-
-

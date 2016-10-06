@@ -15,4 +15,3 @@ export class Ubicacion {
     return this.longitud;
   }
 }
-

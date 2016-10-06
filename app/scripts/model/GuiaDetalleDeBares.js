@@ -4,6 +4,9 @@ var GuiaDetalleDeBares = (function () {
     function GuiaDetalleDeBares(detalles) {
         this.detalles = detalles;
     }
+    GuiaDetalleDeBares.getInstance = function () {
+        return this._instance;
+    };
     // MENSAJES QUE RESPONDE
     GuiaDetalleDeBares.prototype.addDetalle = function (detalle) {
         (this.detalles).push(detalle);
@@ -15,6 +18,7 @@ var GuiaDetalleDeBares = (function () {
                 return detalle;
         }
     };
+    GuiaDetalleDeBares._instance = new GuiaDetalleDeBares([]);
     return GuiaDetalleDeBares;
 }());
 exports.GuiaDetalleDeBares = GuiaDetalleDeBares;

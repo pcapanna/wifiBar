@@ -12,8 +12,9 @@ var Filtro = (function () {
 exports.Filtro = Filtro;
 var FiltroNull = (function (_super) {
     __extends(FiltroNull, _super);
+    // CONSTRUCTOR
     function FiltroNull() {
-        _super.apply(this, arguments);
+        _super.call(this);
     }
     // MENSAJES QUE RESPONDE
     FiltroNull.prototype.filtrar = function (unaColeccionDeDetalles) {
@@ -26,45 +27,29 @@ var FiltroNull = (function (_super) {
     };
     return FiltroNull;
 }(Filtro));
-var FiltroPorCaracteristica = (function (_super) {
-    __extends(FiltroPorCaracteristica, _super);
+exports.FiltroNull = FiltroNull;
+var FiltroDecorator = (function (_super) {
+    __extends(FiltroDecorator, _super);
     // CONSTRUCTOR
-    function FiltroPorCaracteristica(unFiltroComponente, unaEstrategia) {
+    function FiltroDecorator(unFiltroComponente, unaEstrategia) {
         _super.call(this);
         this.filtroComponente = unFiltroComponente;
         this.estrategia = unaEstrategia;
     }
     // MENSAJES QUE RESPONDE
-    FiltroPorCaracteristica.prototype.filtrar = function (unaColeccionDeDetalles) {
+    FiltroDecorator.prototype.filtrar = function (unaColeccionDeDetalles) {
         var detallesFiltrados = [];
         for (var _i = 0, unaColeccionDeDetalles_2 = unaColeccionDeDetalles; _i < unaColeccionDeDetalles_2.length; _i++) {
             var detalle = unaColeccionDeDetalles_2[_i];
-            if (this.estrategia.compararSegun(detalle))
+            if (this.estrategia.acepta(detalle))
                 detallesFiltrados.push(detalle);
         }
         return this.filtroComponente.filtrar(detallesFiltrados);
     };
-    return FiltroPorCaracteristica;
+    return FiltroDecorator;
 }(Filtro));
-var FiltroPorDistancia = (function (_super) {
-    __extends(FiltroPorDistancia, _super);
-    function FiltroPorDistancia() {
-        _super.apply(this, arguments);
-    }
-    return FiltroPorDistancia;
-}(FiltroPorCaracteristica));
-var FiltroPorEnchufes = (function (_super) {
-    __extends(FiltroPorEnchufes, _super);
-    function FiltroPorEnchufes() {
-        _super.apply(this, arguments);
-    }
-    return FiltroPorEnchufes;
-}(FiltroPorCaracteristica));
-var FiltroPorWifi = (function (_super) {
-    __extends(FiltroPorWifi, _super);
-    function FiltroPorWifi() {
-        _super.apply(this, arguments);
-    }
-    return FiltroPorWifi;
-}(FiltroPorCaracteristica));
+exports.FiltroDecorator = FiltroDecorator;
+// wifindBarApp.component('Filtro', Filtro);
+// wifindBarApp.component('FiltroNull', FiltroNull);
+// wifindBarApp.component('FiltroPorCaracteristica', FiltroPorCaracteristica);
 //# sourceMappingURL=Filtro.js.map

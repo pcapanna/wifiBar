@@ -1,4 +1,4 @@
-<div id="wrapper" ng-controller="MainCtrl as ctrl">
+<div id="wrapper">
   <!-- Sidebar -->
   <div id="sidebar-wrapper">
     <ul class="sidebar-nav">
@@ -22,8 +22,8 @@
         <!--</div>-->
 
 
-          <input type="text" placeholder="Distancia en metros" ng-model="vm.maxDistancia" class="form-control"
-                 style="width: 80%; margin-left: 20px; display: inline;"/>
+        <input type="text" placeholder="Distancia en metros" ng-model="vm.maxDistanciaMetros" class="form-control"
+               style="width: 80%; margin-left: 20px; display: inline;"/>
         <multiselect style="width: 80%; margin-left: 20px;" selected-text="Filtros" ms-header="Filtros"
                      ng-model="selectModel" options="f.descripcion for f in vm.filtros" data-multiple="true"
                      data-compare-by="id" scroll-after-rows="5" filter-after-rows="5" max-width="100"
@@ -45,7 +45,7 @@
           <ui-gmap-google-map center='vm.map.center' zoom='vm.map.zoom' draggable="true" options="vm.options"
                               bounds="vm.map.bounds" events="vm.map.events" control="vm.map.control">
 
-            <ui-gmap-markers models="vm.randomMarkers" coords="'self'" icon="'icon'">
+            <ui-gmap-markers models="vm.marcadores" coords="'self'" icon="'icon'">
             </ui-gmap-markers>
 
             <ui-gmap-marker ng-if="vm.marker!=undefined" idkey="vm.marker.id" control="vm.markerControl"

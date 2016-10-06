@@ -7,14 +7,24 @@ import {GuiaDeBares} from "./GuiaDeBares";
 import {GuiaDetalleDeBares} from "./GuiaDetalleDeBares";
 
 
-function buscar(unFiltro:Filtro):Bar[] {
+export class APIWiFindBar {
 
-  var unaGuiaDeDetalles:GuiaDetalleDeBares;
-  var unaGuiaDeBares:GuiaDeBares;          // las guias y el dibujador deberian ser globales.... no estoy segura de como hacer eso
-  var unDibujador:DibujadorEnMapa;
-  var unFiltrador = new Filtrador(unFiltro, unaGuiaDeDetalles);
-  var unBuscador = new BuscadorDeBares(unaGuiaDeBares, unFiltrador, unDibujador);
+  //Se agrega el parametro 'vm' que representa la vista.
+  // Esto es necesario para poder dibujar en el mapa
+  public static buscar(unFiltro:Filtro, vm):Bar[] {
 
-  return unBuscador.buscarBares();
+    // Utilizamos los métodos getInstance de Guia de bares y de detalles de Bares
+    // para facilitar la implementación al hacer que ambas guias sean globales y unicas
+    // por toda la aplicación.
+    var unaGuiaDeBares:GuiaDeBares = GuiaDeBares.getInstance();
+    var unaGuiaDeDetalles:GuiaDetalleDeBares = GuiaDetalleDeBares.getInstance();
 
+    var unDibujador:DibujadorEnMapa = DibujadorEnMapa.getInstance();
+    var unFiltrador = new Filtrador(unFiltro, unaGuiaDeDetalles);
+
+    var unBuscador = new BuscadorDeBares(unaGuiaDeBares, unFiltrador, unDibujador);
+
+    return unBuscador.buscarBares(vm);
+
+  }
 }
