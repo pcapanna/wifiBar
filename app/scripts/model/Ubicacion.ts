@@ -1,3 +1,7 @@
+/// <reference path="../app.ts" />
+
+'use strict';
+
 export class Ubicacion {
   private latitud:number;
   private longitud:number;
@@ -15,3 +19,5 @@ export class Ubicacion {
     return this.longitud;
   }
 }
+
+
