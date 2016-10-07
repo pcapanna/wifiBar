@@ -1,23 +1,19 @@
-/// <reference path="../app.ts" />
+module wifindBarApp {
+  export class Ubicacion {
+    private latitud:number;
+    private longitud:number;
 
-'use strict';
+    constructor(latitud:number, longitud:number) {
+      this.latitud = latitud;
+      this.longitud = longitud;
+    }
 
-export class Ubicacion {
-  private latitud:number;
-  private longitud:number;
+    public getlatitud():number {
+      return this.latitud;
+    }
 
-  constructor(latitud:number, longitud:number) {
-    this.latitud = latitud;
-    this.longitud = longitud;
-  }
-
-  public getLatitud():number {
-    return this.latitud;
-  }
-
-  public getLongittud():number {
-    return this.longitud;
+    public getlongittud():number {
+      return this.longitud;
+    }
   }
 }
-
-

@@ -1,10 +1,17 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "es5",
-    "sourceMap": true
+    "target": "es6",
+    "sourceMap": true,
+    "out": "app/scripts/app.js"
   },
+  "files": [
+    "./app/scripts/app.ts",
+    "./app/scripts/controllers/main.ts",
+    "./app/scripts/model/Ubicacion.ts"
+  ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "bower_components"
   ]
 }

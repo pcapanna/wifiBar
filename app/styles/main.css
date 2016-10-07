@@ -134,3 +134,14 @@ ul.dropdown-menu{
 }
 
 .angular-google-map-container { height: 400px; }
+
+div.btn-group{
+  width: 80%;
+}
+
+.dropdown-menu{
+  width: 200px;
+}
+button.btn.btn-default.dropdown-toggle{
+  width: 100%;
+}
