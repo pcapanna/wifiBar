@@ -87,4 +87,15 @@ var wifindBarApp;
     }());
     wifindBarApp.Ubicacion = Ubicacion;
 })(wifindBarApp || (wifindBarApp = {}));
+'use strict';
+describe('Controller: MainCtrl', function () {
+    beforeEach(module('wifindBarApp'));
+    var MainCtrl, scope;
+    beforeEach(inject(function ($controller, $rootScope) {
+        scope = $rootScope.$new();
+        MainCtrl = $controller('MainCtrl', {
+            $scope: scope
+        });
+    }));
+});
 //# sourceMappingURL=app.js.map
