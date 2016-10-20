@@ -1,13 +1,8 @@
 module wifindBarApp {
   export class GuiaDetalleDeBares {
 
-    private static _instance:GuiaDetalleDeBares = new GuiaDetalleDeBares([]);
     // COLABORADORES INTERNOS
     private detalles:DetalleDeBar[];
-
-    public static getInstance() {
-      return this._instance;
-    }
 
     // CONSTRUCTOR
     constructor(detalles:DetalleDeBar[]) {

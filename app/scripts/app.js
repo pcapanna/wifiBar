@@ -37,15 +37,14 @@ var wifindBarApp;
     var MainCtrl = (function () {
         function MainCtrl($scope, uiGmapGoogleMapApi) {
             this.$scope = $scope;
-            this.backUpMarcadores = [];
             this.marcadores = [];
-            this.markerControl = {};
-            this.options = {
-                scrollwheel: false
-            };
             this.maxDistanciaMetros = 1000;
             this.filtros = [{ id: 1, descripcion: 'WiFi' }, { id: 2, descripcion: 'Enchufes' }];
             this.filtrosSeleccionados = [];
+            this.minEstrellasEnchufes = 1;
+            this.maxEstrellasEnchufes = 5;
+            this.minEstrellasWifi = 1;
+            this.maxEstrellasWifi = 5;
             this.map = {
                 center: { latitude: -34.6277801, longitude: -58.3909607 },
                 control: {},
@@ -55,15 +54,68 @@ var wifindBarApp;
                     click: this.clickMapFunction
                 }
             };
-            this.minEstrellasEnchufes = 1;
-            this.maxEstrellasEnchufes = 5;
-            this.minEstrellasWifi = 1;
-            this.maxEstrellasWifi = 5;
-            var vm = this;
             this.$scope = $scope;
-            vm.cargarGuiaDeBaresRandom();
-            vm.cargarGuiaDetalleDeBaresRandom();
+            this.$parent = $scope.$parent;
+            this.guiaDeBares = new wifindBarApp.GuiaDeBares([]);
+            this.guiaDeDetalleDeBares = new wifindBarApp.GuiaDetalleDeBares([]);
+            var dibujadorEnMapa = new wifindBarApp.DibujadorEnMapaGoogleMaps();
+            this.cargarGuiaDeBaresRandom();
+            this.cargarGuiaDetalleDeBaresRandom();
+            this.api = new wifindBarApp.APIWiFindBar(this.guiaDeBares, this.guiaDeDetalleDeBares, dibujadorEnMapa);
         }
+        MainCtrl.prototype.buscarBaresCercanos = function () {
+            var filtro = new wifindBarApp.FiltroNull();
+            var criterioMaxDistancia = new wifindBarApp.CriterioDeAceptacionDistanciaMaxima(this.maxDistanciaMetros, this.ubicacionOrigen);
+            filtro = new wifindBarApp.FiltroDecorator(filtro, criterioMaxDistancia);
+            for (var _i = 0, _a = this.filtrosSeleccionados; _i < _a.length; _i++) {
+                var filtroSeleccionado = _a[_i];
+                if (filtroSeleccionado.descripcion == "Enchufes") {
+                    var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorEnchufes(this.minEstrellasEnchufes, this.maxEstrellasEnchufes);
+                }
+                else {
+                    if (filtroSeleccionado.descripcion == "WiFi") {
+                        var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
+                    }
+                }
+                filtro = new wifindBarApp.FiltroDecorator(filtro, criterio);
+            }
+            filtro = new wifindBarApp.FiltroDecorator(filtro, criterioMaxDistancia);
+            var baresEncontrados = this.api.buscar(filtro, this);
+        };
+        MainCtrl.prototype.cargarGuiaDeBaresRandom = function () {
+            var latCentro = -34.60005598135185;
+            var longCentro = -58.45550537109375;
+            var deltaLat = 0.07;
+            var deltaLong = 0.12;
+            for (var i = 1; i < 500; i++) {
+                var idKey = i;
+                var latitud = (latCentro - deltaLat) + (Math.random() * (2 * deltaLat));
+                var longitud = (longCentro - deltaLong) + (Math.random() * (2 * deltaLong));
+                var bar = new wifindBarApp.Bar("Bar " + idKey, new wifindBarApp.Ubicacion(latitud, longitud));
+                this.guiaDeBares.addBar(bar);
+            }
+        };
+        ;
+        MainCtrl.prototype.cargarGuiaDetalleDeBaresRandom = function () {
+            for (var _i = 0, _a = this.guiaDeBares.getBares(); _i < _a.length; _i++) {
+                var bar = _a[_i];
+                var detalleDeBar = new wifindBarApp.DetalleDeBar(bar);
+                if (this.estaCalificadoRandom()) {
+                    var calificacionEnchufes = Math.floor(Math.random() * 5) + 1;
+                    detalleDeBar.setCalificacionProcesadaEnchufes(calificacionEnchufes);
+                }
+                if (this.estaCalificadoRandom()) {
+                    var calificacionWifi = Math.floor(Math.random() * 5) + 1;
+                    detalleDeBar.setCalificacionProcesadaWifi(calificacionWifi);
+                }
+                this.guiaDeDetalleDeBares.addDetalle(detalleDeBar);
+            }
+        };
+        ;
+        MainCtrl.prototype.estaCalificadoRandom = function () {
+            var randomFrom1To3 = Math.floor(Math.random() * 2) + 1;
+            return (randomFrom1To3 !== 1 ? false : true);
+        };
         MainCtrl.prototype.clickMapFunction = function (map, eventName, args) {
             var e = args[0];
             this.$parent.vm.setMarcadorDeUbicacion(e.latLng.lat(), e.latLng.lng());
@@ -96,63 +148,6 @@ var wifindBarApp;
                 _this.$scope.$apply();
             }, 0);
         };
-        MainCtrl.prototype.estaCalificadoRandom = function () {
-            var randomFrom1To3 = Math.floor(Math.random() * 2) + 1;
-            return (randomFrom1To3 !== 1 ? false : true);
-        };
-        MainCtrl.prototype.cargarGuiaDeBaresRandom = function () {
-            var latCentro = -34.60005598135185;
-            var longCentro = -58.45550537109375;
-            var deltaLat = 0.07;
-            var deltaLong = 0.12;
-            var guiaDeBares = wifindBarApp.GuiaDeBares.getInstance();
-            for (var i = 1; i < 500; i++) {
-                var idKey = i;
-                var latitud = (latCentro - deltaLat) + (Math.random() * (2 * deltaLat));
-                var longitud = (longCentro - deltaLong) + (Math.random() * (2 * deltaLong));
-                var bar = new wifindBarApp.Bar("Bar " + idKey, new wifindBarApp.Ubicacion(latitud, longitud));
-                guiaDeBares.addBar(bar);
-            }
-        };
-        ;
-        MainCtrl.prototype.cargarGuiaDetalleDeBaresRandom = function () {
-            var guiaDetalleDeBares = wifindBarApp.GuiaDetalleDeBares.getInstance();
-            var guiaDeBares = wifindBarApp.GuiaDeBares.getInstance();
-            for (var _i = 0, _a = guiaDeBares.getBares(); _i < _a.length; _i++) {
-                var bar = _a[_i];
-                var detalleDeBar = new wifindBarApp.DetalleDeBar(bar);
-                if (this.estaCalificadoRandom()) {
-                    var calificacionEnchufes = Math.floor(Math.random() * 5) + 1;
-                    detalleDeBar.setCalificacionProcesadaEnchufes(calificacionEnchufes);
-                }
-                if (this.estaCalificadoRandom()) {
-                    var calificacionWifi = Math.floor(Math.random() * 5) + 1;
-                    detalleDeBar.setCalificacionProcesadaWifi(calificacionWifi);
-                }
-                guiaDetalleDeBares.addDetalle(detalleDeBar);
-            }
-        };
-        ;
-        MainCtrl.prototype.buscarBaresCercanos = function () {
-            var filtro = new wifindBarApp.FiltroNull();
-            var criterioMaxDistancia = new wifindBarApp.CriterioDeAceptacionDistanciaMaxima(this.maxDistanciaMetros, this.ubicacionOrigen);
-            filtro = new wifindBarApp.FiltroDecorator(filtro, criterioMaxDistancia);
-            for (var _i = 0, _a = this.filtrosSeleccionados; _i < _a.length; _i++) {
-                var filtroSeleccionado = _a[_i];
-                if (filtroSeleccionado.descripcion == "Enchufes") {
-                    var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorEnchufes(this.minEstrellasEnchufes, this.maxEstrellasEnchufes);
-                }
-                else {
-                    if (filtroSeleccionado.descripcion == "WiFi") {
-                        var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
-                    }
-                }
-                filtro = new wifindBarApp.FiltroDecorator(filtro, criterio);
-            }
-            filtro = new wifindBarApp.FiltroDecorator(filtro, criterioMaxDistancia);
-            var api = wifindBarApp.APIWiFindBar;
-            var baresEncontrados = api.buscar(filtro, this);
-        };
         return MainCtrl;
     }());
     wifindBarApp.MainCtrl = MainCtrl;
@@ -162,16 +157,16 @@ var wifindBarApp;
 var wifindBarApp;
 (function (wifindBarApp) {
     var APIWiFindBar = (function () {
-        function APIWiFindBar() {
+        function APIWiFindBar(unaGuiaDeBares, unaGuiaDeDetalleDeBares, unDibujadorEnMapa) {
+            this.guiaDeBares = unaGuiaDeBares;
+            this.guiaDeDetalleDeBares = unaGuiaDeDetalleDeBares;
+            this.dibujadorEnMapa = unDibujadorEnMapa;
         }
-        APIWiFindBar.buscar = function (unFiltro, vm) {
-            var unaGuiaDeBares = wifindBarApp.GuiaDeBares.getInstance();
-            var unaGuiaDeDetalles = wifindBarApp.GuiaDetalleDeBares.getInstance();
-            var unFiltrador = new wifindBarApp.Filtrador(unFiltro, unaGuiaDeDetalles);
-            var unBuscador = new wifindBarApp.BuscadorDeBares(unaGuiaDeBares, unFiltrador);
-            var unDibujador = wifindBarApp.DibujadorEnMapa.getInstance();
+        APIWiFindBar.prototype.buscar = function (unFiltro, vm) {
+            var unFiltrador = new wifindBarApp.Filtrador(unFiltro, this.guiaDeDetalleDeBares);
+            var unBuscador = new wifindBarApp.BuscadorDeBares(this.guiaDeBares, unFiltrador);
             var baresEncontrados = unBuscador.buscarBares(vm);
-            unDibujador.dibujarBaresEnMapa(baresEncontrados, vm);
+            this.dibujadorEnMapa.dibujarBaresEnMapa(baresEncontrados, vm);
             return baresEncontrados;
         };
         return APIWiFindBar;
@@ -357,26 +352,27 @@ var wifindBarApp;
 var wifindBarApp;
 (function (wifindBarApp) {
     var DibujadorEnMapa = (function () {
-        function DibujadorEnMapa(unMapa) {
-            this.mapa = unMapa;
+        function DibujadorEnMapa() {
         }
-        DibujadorEnMapa.getInstance = function () {
-            if (this._instance == null) {
-                this._instance = new DibujadorEnMapa(wifindBarApp.MapaGoogleMaps.getInstance());
-            }
-            return this._instance;
-        };
-        DibujadorEnMapa.prototype.dibujarBaresEnMapa = function (unaColeccionDeBares, vm) {
-            var _this = this;
+        return DibujadorEnMapa;
+    }());
+    wifindBarApp.DibujadorEnMapa = DibujadorEnMapa;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var DibujadorEnMapaGoogleMaps = (function (_super) {
+        __extends(DibujadorEnMapaGoogleMaps, _super);
+        function DibujadorEnMapaGoogleMaps() {
+            _super.call(this);
+            this.mapa = new wifindBarApp.MapaGoogleMaps();
+        }
+        DibujadorEnMapaGoogleMaps.prototype.dibujarBaresEnMapa = function (unaColeccionDeBares, vm) {
             var marcadores = this.generarMarcadoresDeBares(unaColeccionDeBares);
             this.mapa.borrarMarcadores();
-            setTimeout(function () {
-                _this.mapa.setMarcadores(marcadores);
-                vm.marcadores = _this.mapa.marcadores;
-                vm.$scope.$apply();
-            }, 0);
+            this.mapa.setMarcadores(marcadores);
+            vm.marcadores = this.mapa.getMarcadores();
         };
-        DibujadorEnMapa.prototype.generarMarcadoresDeBares = function (bares) {
+        DibujadorEnMapaGoogleMaps.prototype.generarMarcadoresDeBares = function (bares) {
             var marcadores = [];
             var i = 1;
             for (var _i = 0, bares_1 = bares; _i < bares_1.length; _i++) {
@@ -387,9 +383,9 @@ var wifindBarApp;
             }
             return marcadores;
         };
-        return DibujadorEnMapa;
-    }());
-    wifindBarApp.DibujadorEnMapa = DibujadorEnMapa;
+        return DibujadorEnMapaGoogleMaps;
+    }(wifindBarApp.DibujadorEnMapa));
+    wifindBarApp.DibujadorEnMapaGoogleMaps = DibujadorEnMapaGoogleMaps;
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {
@@ -460,9 +456,6 @@ var wifindBarApp;
         function GuiaDetalleDeBares(detalles) {
             this.detalles = detalles;
         }
-        GuiaDetalleDeBares.getInstance = function () {
-            return this._instance;
-        };
         GuiaDetalleDeBares.prototype.addDetalle = function (detalle) {
             (this.detalles).push(detalle);
         };
@@ -473,7 +466,6 @@ var wifindBarApp;
                     return detalle;
             }
         };
-        GuiaDetalleDeBares._instance = new GuiaDetalleDeBares([]);
         return GuiaDetalleDeBares;
     }());
     wifindBarApp.GuiaDetalleDeBares = GuiaDetalleDeBares;
@@ -483,15 +475,16 @@ var wifindBarApp;
     var MapaGoogleMaps = (function () {
         function MapaGoogleMaps() {
         }
-        MapaGoogleMaps.getInstance = function () {
-            return MapaGoogleMaps._instance;
-        };
         MapaGoogleMaps.prototype.agregarMarcadores = function (marcadores) {
             this.marcadores.concat(marcadores);
         };
         ;
         MapaGoogleMaps.prototype.borrarMarcadores = function () {
             this.marcadores = null;
+        };
+        ;
+        MapaGoogleMaps.prototype.getMarcadores = function () {
+            return this.marcadores;
         };
         ;
         MapaGoogleMaps.prototype.setMarcadores = function (marcadores) {
@@ -510,7 +503,6 @@ var wifindBarApp;
             }
         };
         ;
-        MapaGoogleMaps._instance = new MapaGoogleMaps();
         return MapaGoogleMaps;
     }());
     wifindBarApp.MapaGoogleMaps = MapaGoogleMaps;

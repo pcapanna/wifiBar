@@ -1,12 +1,9 @@
 module wifindBarApp {
   export class MapaGoogleMaps {
 
-    private static _instance:MapaGoogleMaps = new MapaGoogleMaps();
+    private marcadores:MarcadorGoogleMaps[];
 
-    public marcadores:MarcadorGoogleMaps[];
-
-    public static getInstance() {
-      return MapaGoogleMaps._instance;
+    constructor() {
     }
 
     public agregarMarcadores(marcadores:MarcadorGoogleMaps[]) {
@@ -15,6 +12,10 @@ module wifindBarApp {
 
     public borrarMarcadores() {
       this.marcadores = null;
+    };
+
+    public getMarcadores():MarcadorGoogleMaps[]{
+      return this.marcadores;
     };
 
     public setMarcadores(marcadores:MarcadorGoogleMaps[]) {

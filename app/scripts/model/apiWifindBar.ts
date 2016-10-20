@@ -1,23 +1,28 @@
 module wifindBarApp {
+
   export class APIWiFindBar {
+
+    // Colaboradores Internos
+    private dibujadorEnMapa:DibujadorEnMapa;
+    private guiaDeBares:GuiaDeBares;
+    private guiaDeDetalleDeBares:GuiaDetalleDeBares;
+
+    constructor(unaGuiaDeBares, unaGuiaDeDetalleDeBares, unDibujadorEnMapa){
+      this.guiaDeBares = unaGuiaDeBares;
+      this.guiaDeDetalleDeBares = unaGuiaDeDetalleDeBares;
+      this.dibujadorEnMapa = unDibujadorEnMapa;
+    }
 
     //Se agrega el parametro 'vm' que representa la vista.
     // Esto es necesario para poder dibujar en el mapa
-    public static buscar(unFiltro:Filtro, vm):Bar[] {
-
-      // Utilizamos los métodos getInstance de Guia de bares y de detalles de Bares
-      // para facilitar la implementación al hacer que ambas guias sean globales y unicas
-      // por toda la aplicación.
-      var unaGuiaDeBares:GuiaDeBares = GuiaDeBares.getInstance();
-      var unaGuiaDeDetalles:GuiaDetalleDeBares = GuiaDetalleDeBares.getInstance();
-
-      var unFiltrador = new Filtrador(unFiltro, unaGuiaDeDetalles);
-      var unBuscador = new BuscadorDeBares(unaGuiaDeBares, unFiltrador);
-      var unDibujador:DibujadorEnMapa = DibujadorEnMapa.getInstance();
+    public buscar(unFiltro:Filtro, vm):Bar[] {
+      
+      var unFiltrador = new Filtrador(unFiltro, this.guiaDeDetalleDeBares);
+      var unBuscador = new BuscadorDeBares(this.guiaDeBares, unFiltrador);
 
       var baresEncontrados: Bar[] =  unBuscador.buscarBares(vm);
 
-      unDibujador.dibujarBaresEnMapa(baresEncontrados, vm);
+      this.dibujadorEnMapa.dibujarBaresEnMapa(baresEncontrados, vm);
 
       return baresEncontrados;
     }

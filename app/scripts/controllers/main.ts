@@ -4,23 +4,24 @@ module wifindBarApp {
   export interface IMainScope extends ng.IScope {
   }
 
-
   export class MainCtrl {
-    //
-    private DistanciaUtils;
-    // private secuenciaId:number = 0;
-    private bares;
+
+    private guiaDeBares:GuiaDeBares;
+    private guiaDeDetalleDeBares:GuiaDetalleDeBares;
+    private api:APIWiFindBar;
+
     private ubicacionOrigen:Ubicacion;
-    public marker;
-    private backUpMarcadores = [];
     public marcadores = [];
-    public markerControl = {};
-    public options = {
-      scrollwheel: false
-    };
     public maxDistanciaMetros = 1000;
     public filtros = [{id: 1, descripcion: 'WiFi'}, {id: 2, descripcion: 'Enchufes'}];
     public filtrosSeleccionados = [];
+    public minEstrellasEnchufes = 1;
+    public maxEstrellasEnchufes = 5;
+    public minEstrellasWifi = 1;
+    public maxEstrellasWifi = 5;
+
+    private $parent;
+    public marker;
     public map = {
       center: {latitude: -34.6277801, longitude: -58.3909607},
       control: {},
@@ -30,13 +31,82 @@ module wifindBarApp {
         click: this.clickMapFunction
       }
     };
-    public minEstrellasEnchufes = 1;
-    public maxEstrellasEnchufes = 5;
-    public minEstrellasWifi = 1;
-    public maxEstrellasWifi = 5;
 
-    private $parent;
-    //
+    constructor(private $scope:IMainScope, uiGmapGoogleMapApi) {
+      this.$scope = $scope;
+      this.$parent = $scope.$parent;
+
+      this.guiaDeBares = new GuiaDeBares([]);
+      this.guiaDeDetalleDeBares = new GuiaDetalleDeBares([]);
+
+      var dibujadorEnMapa = new DibujadorEnMapaGoogleMaps();
+
+      this.cargarGuiaDeBaresRandom();
+      this.cargarGuiaDetalleDeBaresRandom();
+
+      this.api = new APIWiFindBar(this.guiaDeBares, this.guiaDeDetalleDeBares, dibujadorEnMapa);
+    }
+
+    public buscarBaresCercanos():void {
+
+      var filtro:Filtro = new FiltroNull();
+      var criterioMaxDistancia:CriterioDeAceptacion =
+        new CriterioDeAceptacionDistanciaMaxima(this.maxDistanciaMetros, this.ubicacionOrigen);
+      filtro = new FiltroDecorator(filtro, criterioMaxDistancia);
+
+      for (var filtroSeleccionado of this.filtrosSeleccionados) {
+        if (filtroSeleccionado.descripcion == "Enchufes") {
+          var criterio:CriterioDeAceptacion =
+            new CriterioDeAceptacionEstrellasPorEnchufes(this.minEstrellasEnchufes, this.maxEstrellasEnchufes);
+        } else {
+          if (filtroSeleccionado.descripcion == "WiFi") {
+            var criterio:CriterioDeAceptacion =
+              new CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
+          }
+        }
+        filtro = new FiltroDecorator(filtro, criterio);
+      }
+      filtro = new FiltroDecorator(filtro, criterioMaxDistancia);
+
+      var baresEncontrados:Bar[] = this.api.buscar(filtro, this);
+    }
+
+    private cargarGuiaDeBaresRandom() {
+      var latCentro:number = -34.60005598135185;
+      var longCentro:number = -58.45550537109375;
+      var deltaLat:number = 0.07;
+      var deltaLong:number = 0.12;
+
+      for (var i = 1; i < 500; i++) {
+        let idKey:number = i;
+        let latitud = (latCentro - deltaLat) + (Math.random() * (2 * deltaLat));
+        let longitud = (longCentro - deltaLong) + (Math.random() * (2 * deltaLong));
+
+        let bar:Bar = new Bar("Bar " + idKey, new Ubicacion(latitud, longitud));
+        this.guiaDeBares.addBar(bar);
+      }
+    };
+
+    private cargarGuiaDetalleDeBaresRandom() {
+      for (var bar of this.guiaDeBares.getBares()) {
+        let detalleDeBar:DetalleDeBar = new DetalleDeBar(bar);
+
+        if (this.estaCalificadoRandom()) {
+          let calificacionEnchufes = Math.floor(Math.random() * 5) + 1;
+          detalleDeBar.setCalificacionProcesadaEnchufes(calificacionEnchufes);
+        }
+        if (this.estaCalificadoRandom()) {
+          let calificacionWifi = Math.floor(Math.random() * 5) + 1;
+          detalleDeBar.setCalificacionProcesadaWifi(calificacionWifi);
+        }
+        this.guiaDeDetalleDeBares.addDetalle(detalleDeBar);
+      }
+    };
+
+    private estaCalificadoRandom() {
+      let randomFrom1To3 = Math.floor(Math.random() * 2) + 1;
+      return (randomFrom1To3 !== 1 ? false : true)
+    }
 
     private clickMapFunction(map, eventName, args) {
       var e = args[0];
@@ -61,7 +131,6 @@ module wifindBarApp {
               var lon = marker.getPosition().lng();
               this.marker.options = {
                 draggable: true,
-                //             labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
                 labelAnchor: "100 0",
                 labelClass: "marker-labels"
               };
@@ -71,93 +140,6 @@ module wifindBarApp {
         this.$scope.$apply();
       }, 0);
     }
-
-    //
-    constructor(private $scope:IMainScope, uiGmapGoogleMapApi) {
-      var vm = this;
-      //   var delta = 0.05;
-      //
-      this.$scope = $scope;
-      //
-      //   vm.markerControl = {};
-      //   vm.options = {
-      //     scrollwheel: false
-      //   };
-      //
-      //   vm.marcadores = [];
-      //
-      //   vm.setMarcadorDeUbicacion(this.map.center.latitude, this.map.center.longitude);
-      //
-      vm.cargarGuiaDeBaresRandom();
-      vm.cargarGuiaDetalleDeBaresRandom();
-    }
-
-
-    private estaCalificadoRandom() {
-      let randomFrom1To3 = Math.floor(Math.random() * 2) + 1;
-      return (randomFrom1To3 !== 1 ? false : true)
-    }
-
-    private cargarGuiaDeBaresRandom() {
-      var latCentro:number = -34.60005598135185;
-      var longCentro:number = -58.45550537109375;
-      var deltaLat:number = 0.07;
-      var deltaLong:number = 0.12;
-
-      var guiaDeBares = GuiaDeBares.getInstance();
-      for (var i = 1; i < 500; i++) {
-        let idKey:number = i;
-        let latitud = (latCentro - deltaLat) + (Math.random() * (2 * deltaLat));
-        let longitud = (longCentro - deltaLong) + (Math.random() * (2 * deltaLong));
-
-        let bar:Bar = new Bar("Bar " + idKey, new Ubicacion(latitud, longitud));
-        guiaDeBares.addBar(bar);
-      }
-    };
-
-    private cargarGuiaDetalleDeBaresRandom() {
-      var guiaDetalleDeBares = GuiaDetalleDeBares.getInstance();
-      var guiaDeBares = GuiaDeBares.getInstance();
-      for (var bar of guiaDeBares.getBares()) {
-        let detalleDeBar:DetalleDeBar = new DetalleDeBar(bar);
-
-        if (this.estaCalificadoRandom()) {
-          let calificacionEnchufes = Math.floor(Math.random() * 5) + 1;
-          detalleDeBar.setCalificacionProcesadaEnchufes(calificacionEnchufes);
-        }
-        if (this.estaCalificadoRandom()) {
-          let calificacionWifi = Math.floor(Math.random() * 5) + 1;
-          detalleDeBar.setCalificacionProcesadaWifi(calificacionWifi);
-        }
-        guiaDetalleDeBares.addDetalle(detalleDeBar);
-      }
-    };
-
-    public buscarBaresCercanos():void {
-
-      var filtro:Filtro = new FiltroNull();
-      var criterioMaxDistancia:CriterioDeAceptacion =
-        new CriterioDeAceptacionDistanciaMaxima(this.maxDistanciaMetros, this.ubicacionOrigen);
-      filtro = new FiltroDecorator(filtro, criterioMaxDistancia);
-
-      for (var filtroSeleccionado of this.filtrosSeleccionados) {
-        if (filtroSeleccionado.descripcion == "Enchufes") {
-          var criterio:CriterioDeAceptacion =
-            new CriterioDeAceptacionEstrellasPorEnchufes(this.minEstrellasEnchufes, this.maxEstrellasEnchufes);
-        } else {
-          if (filtroSeleccionado.descripcion == "WiFi") {
-            var criterio:CriterioDeAceptacion =
-              new CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
-          }
-        }
-        filtro = new FiltroDecorator(filtro, criterio);
-      }
-      filtro = new FiltroDecorator(filtro, criterioMaxDistancia);
-
-      var api = APIWiFindBar;
-      var baresEncontrados:Bar[] = api.buscar(filtro, this);
-    }
-
   }
 
   angular.module('wifindBarApp')

@@ -9,7 +9,7 @@ module wifindBarApp {
     public icon:string;
     private identificador:string;
 
-    public constructor(id:string, ubicacion:Ubicacion, iconUrl:string, identificador:string) {
+    constructor(id:string, ubicacion:Ubicacion, iconUrl:string, identificador:string) {
       this.id = id;
       this.latitude = ubicacion.getLatitud();
       this.longitude = ubicacion.getLongittud();
