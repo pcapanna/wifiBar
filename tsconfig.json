@@ -6,9 +6,17 @@
     "removeComments": true,
     "preserveConstEnums": true,
     "out": "app/scripts/app.js"
-//    "sourceRoot": "./app/scripts/",
-//    "rootDir": "./app/scripts/"
+    //    "sourceRoot": "./app/scripts/",
+    //    "rootDir": "./app/scripts/"
   },
+  "sourceRoot": "./app/scripts/",
+  "rootDir": "./app/scripts/",
+  //  "files": [
+  //    "./app/scripts/app.ts",
+  //    "./app/scripts/controllers/main.ts",
+  //    "./app/scripts/model/ubicacion.ts",
+  //    "./app/scripts/model/guiaDetalleDeBares.ts"
+  //  ],
   "exclude": [
     "node_modules",
     "bower_components"

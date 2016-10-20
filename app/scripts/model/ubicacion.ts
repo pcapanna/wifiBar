@@ -11,11 +11,11 @@ module wifindBarApp {
       this.longitud = longitud;
     }
 
-    public getlatitud(): number {
+    public getLatitud(): number {
       return this.latitud;
     }
 
-    public getlongittud(): number {
+    public getLongittud(): number {
       return this.longitud;
     }
   }
