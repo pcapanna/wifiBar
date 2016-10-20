@@ -44,8 +44,6 @@ module wifindBarApp {
     }
 
     private setMarcadorDeUbicacion(latitud, longitud):void {
-      wifindBarApp;
-      debugger;
       this.ubicacionOrigen = new Ubicacion(latitud, longitud);
       this.marker = undefined;
       // setTimeout(() => {
@@ -163,4 +161,3 @@ module wifindBarApp {
   angular.module('wifindBarApp')
     .controller('MainCtrl', wifindBarApp.MainCtrl);
 }
-

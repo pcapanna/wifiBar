@@ -1,5 +1,3 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular-route.d.ts" />
 angular.module('wifindBarApp', [
     'ngAnimate',
     'ngCookies',
@@ -11,7 +9,7 @@ angular.module('wifindBarApp', [
     'ngMaterial',
     'ui.multiselect'
 ])
-    .config(($routeProvider) => {
+    .config(function ($routeProvider) {
     $routeProvider
         .when('/', {
         templateUrl: 'views/main.html',
@@ -29,12 +27,10 @@ angular.module('wifindBarApp', [
         libraries: 'weather,geometry,visualization'
     });
 });
-/// <reference path="../app.ts" />
 var wifindBarApp;
 (function (wifindBarApp) {
-    class MainCtrl {
-        //
-        constructor($scope, uiGmapGoogleMapApi, DistanciaUtils) {
+    var MainCtrl = (function () {
+        function MainCtrl($scope, uiGmapGoogleMapApi, DistanciaUtils) {
             this.$scope = $scope;
             this.backUpMarcadores = [];
             this.marcadores = [];
@@ -58,76 +54,37 @@ var wifindBarApp;
             this.minEstrellasWifi = 1;
             this.maxEstrellasWifi = 5;
             var vm = this;
-            //   var delta = 0.05;
-            //
             this.$scope = $scope;
-            //
-            //   vm.markerControl = {};
-            //   vm.options = {
-            //     scrollwheel: false
-            //   };
-            //
-            //   vm.marcadores = [];
-            //
-            //   vm.setMarcadorDeUbicacion(this.map.center.latitude, this.map.center.longitude);
-            //
-            //   // vm.cargarGuiaDeBaresRandom();
-            //   // vm.cargarGuiaDetalleDeBaresRandom();
         }
-        //
-        clickMapFunction(map, eventName, args) {
+        MainCtrl.prototype.clickMapFunction = function (map, eventName, args) {
             var e = args[0];
             this.$parent.vm.setMarcadorDeUbicacion(e.latLng.lat(), e.latLng.lng());
-        }
-        setMarcadorDeUbicacion(latitud, longitud) {
-            wifindBarApp;
-            debugger;
+        };
+        MainCtrl.prototype.setMarcadorDeUbicacion = function (latitud, longitud) {
             this.ubicacionOrigen = new wifindBarApp.Ubicacion(latitud, longitud);
             this.marker = undefined;
-            // setTimeout(() => {
-            //   this.marker = {
-            //     id: 0,
-            //     control: {},
-            //     coords: {
-            //       latitude: this.ubicacionOrigen.getLatitud(),
-            //       longitude: this.ubicacionOrigen.getLongittud()
-            //     },
-            //     options: {visible: true, draggable: true},
-            //     events: {
-            //       dragend: function (marker, eventName, args) {
-            //         var lat = marker.getPosition().lat();
-            //         var lon = marker.getPosition().lng();
-            //         this.marker.options = {
-            //           draggable: true,
-            //           //             labelContent: "lat: " + $scope.marker.coords.latitude + ' ' + 'lon: ' + $scope.marker.coords.longitude,
-            //           labelAnchor: "100 0",
-            //           labelClass: "marker-labels"
-            //         };
-            //       }
-            //     }
-            //   };
-            //   this.$scope.$apply();
-            // }, 0);
-        }
-    }
+        };
+        return MainCtrl;
+    }());
     wifindBarApp.MainCtrl = MainCtrl;
     angular.module('wifindBarApp')
         .controller('MainCtrl', wifindBarApp.MainCtrl);
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {
-    class Ubicacion {
-        constructor(latitud, longitud) {
+    var Ubicacion = (function () {
+        function Ubicacion(latitud, longitud) {
             this.latitud = latitud;
             this.longitud = longitud;
         }
-        getlatitud() {
+        Ubicacion.prototype.getlatitud = function () {
             return this.latitud;
-        }
-        getlongittud() {
+        };
+        Ubicacion.prototype.getlongittud = function () {
             return this.longitud;
-        }
-    }
+        };
+        return Ubicacion;
+    }());
     wifindBarApp.Ubicacion = Ubicacion;
 })(wifindBarApp || (wifindBarApp = {}));
 //# sourceMappingURL=app.js.map

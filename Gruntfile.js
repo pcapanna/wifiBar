@@ -1,4 +1,4 @@
-// Generated on 2016-10-06 using generator-angular 0.15.1
+// Generated on 2015-11-30 using generator-angular 0.14.0
 'use strict';
 
 // # Globbing
@@ -22,7 +22,7 @@ module.exports = function (grunt) {
   // Configurable paths for the application
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
-    dist: 'dist'
+    dist: 'spring-boot-app-dist/src/main/webapp'
   };
 
   // Define the configuration for all the tasks
@@ -37,13 +37,16 @@ module.exports = function (grunt) {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
-      typescript: {
-        files: ['<%= yeoman.app %>/scripts/{,*/}*.ts'],
-        tasks: ['typescript:base']
+      js: {
+        files: ['<%= yeoman.app %>/scripts/{,*/}*.js'],
+        tasks: ['newer:jshint:all', 'newer:jscs:all'],
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        }
       },
-      typescriptTest: {
-        files: ['test/spec/{,*/}*.ts'],
-        tasks: ['typescript:test', 'karma']
+      jsTest: {
+        files: ['test/spec/{,*/}*.js'],
+        tasks: ['newer:jshint:test', 'newer:jscs:test', 'karma']
       },
       styles: {
         files: ['<%= yeoman.app %>/styles/{,*/}*.css'],
@@ -59,7 +62,6 @@ module.exports = function (grunt) {
         files: [
           '<%= yeoman.app %>/{,*/}*.html',
           '.tmp/styles/{,*/}*.css',
-          '.tmp/scripts/{,*/}*.js',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
         ]
       }
@@ -68,9 +70,10 @@ module.exports = function (grunt) {
     // The actual grunt server settings
     connect: {
       options: {
-        port: 9000,
+        port: 8080,
         // Change this to '0.0.0.0' to access the server from outside.
-        hostname: 'localhost',
+        //hostname: 'localhost',
+        hostname: '0.0.0.0',
         livereload: 35729
       },
       livereload: {
@@ -124,8 +127,15 @@ module.exports = function (grunt) {
       },
       all: {
         src: [
-          'Gruntfile.js'
+          'Gruntfile.js',
+          '<%= yeoman.app %>/scripts/{,*/}*.js'
         ]
+      },
+      test: {
+        options: {
+          jshintrc: 'test/.jshintrc'
+        },
+        src: ['test/spec/{,*/}*.js']
       }
     },
 
@@ -211,41 +221,7 @@ module.exports = function (grunt) {
             }
           }
       }
-    }, 
-    // Compiles TypeScript to JavaScript
-    typescript: {
-      base: {
-        src: ['<%= yeoman.app %>/scripts/{,*/}*.ts'],
-          dest: '.tmp/scripts',
-          options: {
-          module: 'amd', //or commonjs
-            target: 'es5', //or es3
-            'base_path': '<%= yeoman.app %>/scripts', //quoting base_path to get around jshint warning.
-            sourcemap: true,
-            declaration: true
-        }
-      },
-      test: {
-        src: ['test/spec/{,*/}*.ts', 'test/e2e/{,*/}*.ts'],
-          dest: '.tmp/spec',
-          options: {
-          module: 'amd', //or commonjs
-            target: 'es5', //or es3
-            sourcemap: true,
-            declaration: true
-        }
-      }
     },
-    tsd: {
-      refresh: {
-        options: {
-          // execute a command
-          command: 'reinstall',
-          config: 'tsd.json'
-        }
-      }
-    },
-    
 
     // Renames files for browser caching purposes
     filerev: {
@@ -363,7 +339,7 @@ module.exports = function (grunt) {
     ngtemplates: {
       dist: {
         options: {
-          module: 'wifindBarApp',
+          module: 'zCall',
           htmlmin: '<%= htmlmin.dist.options %>',
           usemin: 'scripts/scripts.js'
         },
@@ -430,15 +406,12 @@ module.exports = function (grunt) {
     // Run some tasks in parallel to speed up the build process
     concurrent: {
       server: [
-        'typescript:base',
         'copy:styles'
       ],
       test: [
-        'typescript',
         'copy:styles'
       ],
       dist: [
-        'typescript',
         'copy:styles',
         'imagemin',
         'svgmin'
@@ -451,7 +424,19 @@ module.exports = function (grunt) {
         configFile: 'test/karma.conf.js',
         singleRun: true
       }
-    }
+    },
+
+    //deploy_site: {
+    //  options: {
+    //    commit_msg: 'deployment',
+    //    deploy_url: 'http://demo.zcall.com.ar'
+    //  },
+    //  your_target: {
+    //    base_path: 'dist',
+    //    remote_url: 'https://github.com/LonnyGomes/grunt-deploy-site.git'
+    //    // Target-specific file lists and/or options go here.
+    //  }
+    //}
   });
 
 
@@ -463,7 +448,6 @@ module.exports = function (grunt) {
     grunt.task.run([
       'clean:server',
       'wiredep',
-      'tsd:refresh',
       'concurrent:server',
       'postcss:server',
       'connect:livereload',
@@ -479,7 +463,6 @@ module.exports = function (grunt) {
   grunt.registerTask('test', [
     'clean:server',
     'wiredep',
-    'tsd:refresh',
     'concurrent:test',
     'postcss',
     'connect:test',
@@ -489,7 +472,6 @@ module.exports = function (grunt) {
   grunt.registerTask('build', [
     'clean:dist',
     'wiredep',
-    'tsd:refresh',
     'useminPrepare',
     'concurrent:dist',
     'postcss',
@@ -511,4 +493,7 @@ module.exports = function (grunt) {
     'test',
     'build'
   ]);
+
+  grunt.loadNpmTasks('grunt-contrib-jshint');
+
 };

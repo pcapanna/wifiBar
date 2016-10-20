@@ -1,7 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
 
-angular.module('wifindBarApp', [
+
+angular.module('wifindBarApp',  [
   'ngAnimate',
   'ngCookies',
   'ngResource',
