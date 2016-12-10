@@ -8,12 +8,12 @@ module wifindBarApp {
     }
 
     // MENSAJES QUE RESPONDE
-    public filtrar(unaColeccionDeDetalles:DetalleDeBar[]):Bar[] {
-      var baresFiltrados:Bar[] = [];
+    public filtrar(unaColeccionDeDetalles:DetalleDeBar[]):DetalleDeBar[] {
+      var detallesFiltrados:DetalleDeBar[] = [];
       for (var detalle of unaColeccionDeDetalles) {
-        baresFiltrados.push(detalle.getBar());
+        detallesFiltrados.push(detalle);
       }
-      return baresFiltrados;
+      return detallesFiltrados;
     }
   }
 }

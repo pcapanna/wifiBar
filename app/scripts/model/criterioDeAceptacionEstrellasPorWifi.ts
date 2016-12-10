@@ -15,7 +15,7 @@ module wifindBarApp {
     // MENSAJES QUE RESPONDE
 
     public acepta(unDetalleDeBar:DetalleDeBar):boolean {
-      var califWifi:number = unDetalleDeBar.getCalificacionWifi();
+      let califWifi:number = unDetalleDeBar.getCalificacionWifi().getCalificacion().getValor();
       return (califWifi <= this.calificacionHasta && califWifi >= this.calificacionDesde);
     }
   }

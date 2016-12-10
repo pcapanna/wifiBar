@@ -11,12 +11,20 @@ module wifindBarApp {
 
     // MENSAJES QUE RESPONDE
     public dameDetalleDeUnBar(unBar:Bar):DetalleDeBar {
-      //TODO
+      for (let entradaBarDetalle of this.entradasBarDetalle){
+        if (entradaBarDetalle.dameBar() == unBar){
+          return entradaBarDetalle.dameDetalle();
+        }
+      }
       return null;
     }
 
     public dameBarDeUnDetalle(unDetalle:DetalleDeBar):Bar {
-      //TODO
+      for (let entradaBarDetalle of this.entradasBarDetalle){
+        if (entradaBarDetalle.dameDetalle() == unDetalle){
+          return entradaBarDetalle.dameBar();
+        }
+      }
       return null;
     }
 
