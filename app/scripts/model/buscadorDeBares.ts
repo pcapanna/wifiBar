@@ -6,14 +6,14 @@ module wifindBarApp {
     private filtrador:Filtrador;
 
     // CONSTRUCTOR
-    constructor(guiaDeBares:GuiaDeBares, filtrador:Filtrador) {
-      this.guiaDebares = guiaDeBares;
-      this.filtrador = filtrador;
+    constructor(unFiltrador:Filtrador, unaGuiaDeBares:GuiaDeBares) {
+      this.filtrador = unFiltrador;
+      this.guiaDebares = unaGuiaDeBares;
     }
 
     // MENSAJES QUE RESPONDE
 
-    buscarBares(vm):Bar[] {
+    buscarBares():Bar[] {
       var bares:Bar[] = this.guiaDebares.getBares();
       bares = this.filtrador.filtrar(bares);
       return bares;

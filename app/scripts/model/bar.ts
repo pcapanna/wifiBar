@@ -2,19 +2,18 @@ module wifindBarApp {
   export class Bar {
 
     // COLABORADORES INTERNOS
-    private nombre:string;
+    private nombre:Nombre;
     private direccion:Ubicacion;
-    //horario: ;
 
     // CONSTRUCTOR
-    constructor(nombre:string, direccion:Ubicacion/*, horario:*/) {
+    constructor(nombre:Nombre, direccion:Ubicacion/*, horario:*/) {
       this.nombre = nombre;
       this.direccion = direccion;
       //this.horario = horario;
     }
 
     // MENSAJES QUE RESPONDE
-    public getNombre():string {
+    public getNombre():Nombre {
       return this.nombre;
     }
 

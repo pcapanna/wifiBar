@@ -1,4 +1,5 @@
 module wifindBarApp {
+
   export class MapaGoogleMaps {
 
     private marcadores:MarcadorGoogleMaps[];

@@ -3,46 +3,51 @@ module wifindBarApp {
 
     // COLABORADORES INTERNOS
     private bar:Bar;
-    private calificacionProcesadaEnchufes:number;
-    private calificacionProcesadaWifi:number;
-
-    // QUE PASA SI NO TIENE CALIFICACIONES EN ALGUNO DE ESTOS?
-    // TODO: FALTA MODELAR PROPIEDADES CALIFICABLES. UN DETALLE BAR DEBERIA TENER UN DICCIONARIO DE
-    // TODO: PROPIEDAD -> CALIFICACION (Ej.: {enchufe: 3, wifi: 2, buenPrecio: 5})
+    private historialDeCalificacionesEnchufes;
+    private historialDeCalificacionesWifi;
+    private calificacionProcesadaEnchufes:CalificacionProcesada;
+    private calificacionProcesadaWifi:CalificacionProcesada;
 
     // CONSTRUCTOR
     constructor(unBar:Bar) {
       this.bar = unBar;
+      this.calificacionProcesadaEnchufes = new CalificacionProcesada();
+      this.calificacionProcesadaWifi = new CalificacionProcesada();
+      this.historialDeCalificacionesEnchufes = new HistorialDeCalificaciones();
+      this.historialDeCalificacionesWifi = new HistorialDeCalificaciones();
     }
 
     // MENSAJES QUE RESPONDE
-
-    public setCalificacionProcesadaEnchufes(calificacion:number):void {
-      this.calificacionProcesadaEnchufes = calificacion;
-    }
-
-    public setCalificacionProcesadaWifi(calificacion:number):void {
-      this.calificacionProcesadaWifi = calificacion;
-    }
-
-    public getCalificacionEnchufes():number {
+    public getCalificacionEnchufes():CalificacionProcesada {
       return this.calificacionProcesadaEnchufes;
     }
 
-    public getCalificacionWifi():number {
+    public setCalificacionEnchufes(unaCalificacionProcesada:CalificacionProcesada):void {
+      this.calificacionProcesadaEnchufes = unaCalificacionProcesada;
+    }
+
+    public getCalificacionWifi():CalificacionProcesada {
       return this.calificacionProcesadaWifi;
     }
 
-    public getBar():Bar {
-      return this.bar;
+    public setCalificacionWifi(unaCalificacionProcesada:CalificacionProcesada):void {
+      this.calificacionProcesadaWifi = unaCalificacionProcesada;
     }
 
-    public getNombreBar():string {
-      return (this.bar).getNombre();
+    public getHistorialEnchufes():HistorialDeCalificaciones {
+      return this.historialDeCalificacionesEnchufes;
     }
 
-    public getDireccionBar():Ubicacion {
-      return (this.bar).getDireccion();
+    public getHistorialWifi():HistorialDeCalificaciones {
+      return this.historialDeCalificacionesWifi;
+    }
+
+    public obtenerNombreBar():Nombre {
+      return this.bar.getNombre();
+    }
+
+    public obtenerDireccionDeBar():Ubicacion {
+      return this.bar.getDireccion();
     }
 
   }

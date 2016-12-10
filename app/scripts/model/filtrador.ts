@@ -4,12 +4,12 @@ module wifindBarApp {
 
     // COLABORADORES INTERNOS
     private filtro:Filtro;
-    private guiaDeDetalles:GuiaDetalleDeBares; // esta guia deberia ser global a todos
+    private relacionadorBarDetalles:RelacionadorBarDetalles;
 
     // CONSTRUCTOR
-    constructor(filtro:Filtro, guia:GuiaDetalleDeBares) {
-      this.filtro = filtro;
-      this.guiaDeDetalles = guia;
+    constructor(unFiltro:Filtro, unRelacionadorBarDetalles:RelacionadorBarDetalles) {
+      this.filtro = unFiltro;
+      this.relacionadorBarDetalles = unRelacionadorBarDetalles;
     }
 
     // MENSAJES QUE RESPONDE
@@ -17,7 +17,7 @@ module wifindBarApp {
 
       var detalles:DetalleDeBar[] = [];
       for (let bar of unaColeccionDeBares) {
-        detalles.push(this.guiaDeDetalles.dameDetalleDeBar(bar));
+        detalles.push(this.relacionadorBarDetalles.dameDetalleDeUnBar(bar));
       }
 
       return (this.filtro).filtrar(detalles);

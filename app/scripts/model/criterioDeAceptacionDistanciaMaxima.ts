@@ -1,7 +1,3 @@
-
-
-
-
 module wifindBarApp {
 
   export class CriterioDeAceptacionDistanciaMaxima extends CriterioDeAceptacion {
@@ -19,28 +15,25 @@ module wifindBarApp {
 
     // MENSAJES QUE RESPONDE
     public acepta(unDetalleDeBar:DetalleDeBar):boolean {
-      var ubicacionBar:Ubicacion = unDetalleDeBar.getDireccionBar();
+      var ubicacionBar:Ubicacion = unDetalleDeBar.obtenerDireccionDeBar();
       return this.distancia(this.unaUbicacionOrigen, ubicacionBar) <= this.unaDistancia;
     }
 
-    private distancia(ubicacion1, ubicacion2) {
-      if (Number.prototype.toRadians === undefined) {
-        Number.prototype.toRadians = function() { return this * Math.PI / 180; };
-      }
+    private toRadians(number:any):Number{
+      return number * Math.PI / 180;
+    }
 
-      /** Extend Number object with method to convert radians to numeric (signed) degrees */
-      if (Number.prototype.toDegrees === undefined) {
-        Number.prototype.toDegrees = function() { return this * 180 / Math.PI; };
-      }
+    private toDegrees(number:any):Number{
+      return number * 180 / Math.PI;
+    }
 
-      /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-      if (typeof module != 'undefined' && module.exports) module.exports = LatLon; // ≡ export default LatLon
+    private distancia(ubicacion1:Ubicacion, ubicacion2:Ubicacion):Number {
 
       var R = 6371e3; // metres
-      var φ1 = ubicacion1.getLatitud().toRadians();
-      var φ2 = ubicacion2.getLatitud().toRadians();
-      var Δφ = (ubicacion2.getLatitud() - ubicacion1.getLatitud()).toRadians();
-      var Δλ = (ubicacion2.getLongittud() - ubicacion1.getLongittud()).toRadians();
+      var φ1:any = this.toRadians(ubicacion1.getLatitud());
+      var φ2:any = this.toRadians(ubicacion2.getLatitud());
+      var Δφ:any = this.toRadians(ubicacion2.getLatitud() - ubicacion1.getLatitud());
+      var Δλ:any = this.toRadians(ubicacion2.getLongittud() - ubicacion1.getLongittud());
 
       var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
         Math.cos(φ1) * Math.cos(φ2) *
@@ -50,6 +43,35 @@ module wifindBarApp {
       var d = R * c;
       return d;
     }
+
+    /*    private distancia(ubicacion1, ubicacion2) {
+     if (Number.prototype.toRadians === undefined) {
+     Number.prototype.toRadians = function() { return this * Math.PI / 180; };
+     }
+
+     /!** Extend Number object with method to convert radians to numeric (signed) degrees *!/
+     if (Number.prototype.toDegrees === undefined) {
+     Number.prototype.toDegrees = function() { return this * 180 / Math.PI; };
+     }
+
+     /!* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  *!/
+     if (typeof module != 'undefined' && module.exports) module.exports = LatLon; // ≡ export default LatLon
+
+     var R = 6371e3; // metres
+     var φ1 = ubicacion1.getLatitud().toRadians();
+     var φ2 = ubicacion2.getLatitud().toRadians();
+     var Δφ = (ubicacion2.getLatitud() - ubicacion1.getLatitud()).toRadians();
+     var Δλ = (ubicacion2.getLongittud() - ubicacion1.getLongittud()).toRadians();
+
+     var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+     Math.cos(φ1) * Math.cos(φ2) *
+     Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+     var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+     var d = R * c;
+     return d;
+     }*/
+
 
   }
 }

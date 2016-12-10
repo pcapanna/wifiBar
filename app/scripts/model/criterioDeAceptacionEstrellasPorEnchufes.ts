@@ -14,7 +14,7 @@
 
     // MENSAJES QUE RESPONDE
 
-    acepta(unDetalleDeBar:DetalleDeBar):boolean {
+    public acepta(unDetalleDeBar:DetalleDeBar):boolean {
       var califEnchufes:number = unDetalleDeBar.getCalificacionEnchufes();
       return (califEnchufes <= this.calificacionHasta && califEnchufes >= this.calificacionDesde);
     }
