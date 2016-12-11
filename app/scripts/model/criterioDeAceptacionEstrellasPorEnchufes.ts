@@ -15,6 +15,9 @@ module wifindBarApp {
     // MENSAJES QUE RESPONDE
 
     public acepta(unDetalleDeBar: DetalleDeBar): boolean {
+      if (unDetalleDeBar.getCalificacionEnchufes().getCalificacion() == null){
+        return false;
+      }
       let califEnchufes: number = unDetalleDeBar.getCalificacionEnchufes().getCalificacion().getValor();
       return (califEnchufes <= this.calificacionHasta && califEnchufes >= this.calificacionDesde);
     }

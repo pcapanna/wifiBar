@@ -1,6 +1,9 @@
 module wifindBarApp {
-  export abstract class ProcesaddorDeCalificaciones {
+  export abstract class ProcesadorDeCalificaciones {
 
+    constructor(){
+
+    }
     // MENSAJES QUE RESPONDE
     public abstract procesarCalificaciones(unaColeccionDeCalificaciones:Calificacion[]):Calificacion;
 

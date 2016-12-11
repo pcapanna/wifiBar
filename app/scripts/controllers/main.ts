@@ -6,8 +6,6 @@ module wifindBarApp {
 
   export class MainCtrl {
 
-    private guiaDeBares: GuiaDeBares;
-    private guiaDeDetalleDeBares: GuiaDetalleDeBares;
     private api: APIWiFindBar;
 
     private ubicacionOrigen: Ubicacion;

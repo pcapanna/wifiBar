@@ -5,17 +5,16 @@ module wifindBarApp {
     public options;
     public latitude: number;
     public longitude: number;
-    public title: string;
     public icon: string;
     private identificador: string;
 
-    constructor(id: string, ubicacion: Ubicacion, iconUrl: string, identificador: string) {
+    constructor(id: string, ubicacion: Ubicacion, iconUrl: string, identificador: string, title:string) {
       this.id = id;
       this.latitude = ubicacion.getLatitud();
       this.longitude = ubicacion.getLongittud();
-      this.title = identificador + ' ' + id;
       this.icon = iconUrl;
       this.identificador = identificador;
+      this.options = {title : title}
     }
 
     public getIdentificador() {

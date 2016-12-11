@@ -6,9 +6,9 @@ module wifindBarApp {
     private direccion:Ubicacion;
 
     // CONSTRUCTOR
-    constructor(nombre:Nombre, direccion:Ubicacion/*, horario:*/) {
-      this.nombre = nombre;
-      this.direccion = direccion;
+    constructor(unNombre:Nombre, unaDireccion:Ubicacion/*, horario:*/) {
+      this.nombre = unNombre;
+      this.direccion = unaDireccion;
       //this.horario = horario;
     }
 

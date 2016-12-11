@@ -13,7 +13,7 @@ module wifindBarApp {
       this.guiaDeBares = new GuiaDeBares();
       this.relacionadorBarDetalles = new RelacionadorBarDetalles();
       this.ingresadorDeBares = new IngresadorDeBares(this.guiaDeBares, this.relacionadorBarDetalles);
-      this.dibujadorEnMapa = new DibujadorEnMapaGoogleMaps();
+      this.dibujadorEnMapa = new DibujadorEnMapaGoogleMaps(this.relacionadorBarDetalles);
       this.calificadorDeBares = new CalificadorDeBares(this.relacionadorBarDetalles, new CalculadorDePromedioDeCalificaciones());
     }
 

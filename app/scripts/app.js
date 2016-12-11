@@ -56,17 +56,14 @@ var wifindBarApp;
             };
             this.$scope = $scope;
             this.$parent = $scope.$parent;
-            this.guiaDeBares = new wifindBarApp.GuiaDeBares([]);
-            this.guiaDeDetalleDeBares = new wifindBarApp.GuiaDetalleDeBares([]);
-            var dibujadorEnMapa = new wifindBarApp.DibujadorEnMapaGoogleMaps();
-            this.cargarGuiaDeBaresRandom();
-            this.cargarGuiaDetalleDeBaresRandom();
-            this.api = new wifindBarApp.APIWiFindBar(this.guiaDeBares, this.guiaDeDetalleDeBares, dibujadorEnMapa);
+            this.api = new wifindBarApp.APIWiFindBar();
+            this.cargarBaresRandomPorApi(this.api);
+            this.cargarDetallesDeBaresRandomPorApi(this.api);
         }
         MainCtrl.prototype.buscarBaresCercanos = function () {
             var filtro = new wifindBarApp.FiltroNull();
             var criterioMaxDistancia = new wifindBarApp.CriterioDeAceptacionDistanciaMaxima(this.maxDistanciaMetros, this.ubicacionOrigen);
-            filtro = new wifindBarApp.FiltroDecorator(filtro, criterioMaxDistancia);
+            filtro = new wifindBarApp.FiltroPorCaracteristica(filtro, criterioMaxDistancia);
             for (var _i = 0, _a = this.filtrosSeleccionados; _i < _a.length; _i++) {
                 var filtroSeleccionado = _a[_i];
                 if (filtroSeleccionado.descripcion == "Enchufes") {
@@ -77,12 +74,13 @@ var wifindBarApp;
                         var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
                     }
                 }
-                filtro = new wifindBarApp.FiltroDecorator(filtro, criterio);
+                filtro = new wifindBarApp.FiltroPorCaracteristica(filtro, criterio);
             }
-            filtro = new wifindBarApp.FiltroDecorator(filtro, criterioMaxDistancia);
-            var baresEncontrados = this.api.buscar(filtro, this);
+            filtro = new wifindBarApp.FiltroPorCaracteristica(filtro, criterioMaxDistancia);
+            var baresEncontrados = this.api.buscar(filtro);
+            this.api.dibujarBares(baresEncontrados, this);
         };
-        MainCtrl.prototype.cargarGuiaDeBaresRandom = function () {
+        MainCtrl.prototype.cargarBaresRandomPorApi = function (api) {
             var latCentro = -34.60005598135185;
             var longCentro = -58.45550537109375;
             var deltaLat = 0.07;
@@ -91,24 +89,21 @@ var wifindBarApp;
                 var idKey = i;
                 var latitud = (latCentro - deltaLat) + (Math.random() * (2 * deltaLat));
                 var longitud = (longCentro - deltaLong) + (Math.random() * (2 * deltaLong));
-                var bar = new wifindBarApp.Bar("Bar " + idKey, new wifindBarApp.Ubicacion(latitud, longitud));
-                this.guiaDeBares.addBar(bar);
+                api.ingresarUnBar(new wifindBarApp.Nombre("Bar " + idKey), new wifindBarApp.Ubicacion(latitud, longitud));
             }
         };
         ;
-        MainCtrl.prototype.cargarGuiaDetalleDeBaresRandom = function () {
-            for (var _i = 0, _a = this.guiaDeBares.getBares(); _i < _a.length; _i++) {
+        MainCtrl.prototype.cargarDetallesDeBaresRandomPorApi = function (api) {
+            for (var _i = 0, _a = api.obtenerBares(); _i < _a.length; _i++) {
                 var bar = _a[_i];
-                var detalleDeBar = new wifindBarApp.DetalleDeBar(bar);
                 if (this.estaCalificadoRandom()) {
-                    var calificacionEnchufes = Math.floor(Math.random() * 5) + 1;
-                    detalleDeBar.setCalificacionProcesadaEnchufes(calificacionEnchufes);
+                    var calificacionEnchufes = new wifindBarApp.CalificacionPorEstrellas(Math.floor(Math.random() * 5) + 1);
+                    api.calificarEnchufesDeBar(bar, calificacionEnchufes);
                 }
                 if (this.estaCalificadoRandom()) {
-                    var calificacionWifi = Math.floor(Math.random() * 5) + 1;
-                    detalleDeBar.setCalificacionProcesadaWifi(calificacionWifi);
+                    var calificacionWifi = new wifindBarApp.CalificacionPorEstrellas(Math.floor(Math.random() * 5) + 1);
+                    api.calificarWifiDeBar(bar, calificacionWifi);
                 }
-                this.guiaDeDetalleDeBares.addDetalle(detalleDeBar);
             }
         };
         ;
@@ -157,17 +152,37 @@ var wifindBarApp;
 var wifindBarApp;
 (function (wifindBarApp) {
     var APIWiFindBar = (function () {
-        function APIWiFindBar(unaGuiaDeBares, unaGuiaDeDetalleDeBares, unDibujadorEnMapa) {
-            this.guiaDeBares = unaGuiaDeBares;
-            this.guiaDeDetalleDeBares = unaGuiaDeDetalleDeBares;
-            this.dibujadorEnMapa = unDibujadorEnMapa;
+        function APIWiFindBar() {
+            this.guiaDeBares = new wifindBarApp.GuiaDeBares();
+            this.relacionadorBarDetalles = new wifindBarApp.RelacionadorBarDetalles();
+            this.ingresadorDeBares = new wifindBarApp.IngresadorDeBares(this.guiaDeBares, this.relacionadorBarDetalles);
+            this.dibujadorEnMapa = new wifindBarApp.DibujadorEnMapaGoogleMaps(this.relacionadorBarDetalles);
+            this.calificadorDeBares = new wifindBarApp.CalificadorDeBares(this.relacionadorBarDetalles, new wifindBarApp.CalculadorDePromedioDeCalificaciones());
         }
-        APIWiFindBar.prototype.buscar = function (unFiltro, vm) {
-            var unFiltrador = new wifindBarApp.Filtrador(unFiltro, this.guiaDeDetalleDeBares);
-            var unBuscador = new wifindBarApp.BuscadorDeBares(this.guiaDeBares, unFiltrador);
-            var baresEncontrados = unBuscador.buscarBares(vm);
-            this.dibujadorEnMapa.dibujarBaresEnMapa(baresEncontrados, vm);
-            return baresEncontrados;
+        APIWiFindBar.prototype.buscar = function (unFiltro) {
+            var unFiltrador = new wifindBarApp.Filtrador(unFiltro, this.relacionadorBarDetalles);
+            var unBuscador = new wifindBarApp.BuscadorDeBares(unFiltrador, this.guiaDeBares);
+            return unBuscador.buscarBares();
+        };
+        APIWiFindBar.prototype.obtenerBares = function () {
+            return this.guiaDeBares.getBares();
+        };
+        APIWiFindBar.prototype.ingresarUnBar = function (unNombre, unaDireccion) {
+            this.ingresadorDeBares.ingresarBar(unNombre, unaDireccion);
+        };
+        APIWiFindBar.prototype.calificarEnchufesDeBar = function (unBar, unaCalificacion) {
+            var unDetalle = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+            this.calificadorDeBares.calificarEnchufesDeBar(unBar, unaCalificacion);
+        };
+        APIWiFindBar.prototype.calificarWifiDeBar = function (unBar, unaCalificacion) {
+            var unDetalle = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+            this.calificadorDeBares.calificarWifiDeBar(unBar, unaCalificacion);
+        };
+        APIWiFindBar.prototype.verDetalleDeUnBar = function (unBar) {
+            return this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+        };
+        APIWiFindBar.prototype.dibujarBares = function (unaColeccionDeBares, vm) {
+            this.dibujadorEnMapa.dibujarBaresEnMapa(unaColeccionDeBares, vm);
         };
         return APIWiFindBar;
     }());
@@ -176,9 +191,9 @@ var wifindBarApp;
 var wifindBarApp;
 (function (wifindBarApp) {
     var Bar = (function () {
-        function Bar(nombre, direccion) {
-            this.nombre = nombre;
-            this.direccion = direccion;
+        function Bar(unNombre, unaDireccion) {
+            this.nombre = unNombre;
+            this.direccion = unaDireccion;
         }
         Bar.prototype.getNombre = function () {
             return this.nombre;
@@ -193,11 +208,11 @@ var wifindBarApp;
 var wifindBarApp;
 (function (wifindBarApp) {
     var BuscadorDeBares = (function () {
-        function BuscadorDeBares(guiaDeBares, filtrador) {
-            this.guiaDebares = guiaDeBares;
-            this.filtrador = filtrador;
+        function BuscadorDeBares(unFiltrador, unaGuiaDeBares) {
+            this.filtrador = unFiltrador;
+            this.guiaDebares = unaGuiaDeBares;
         }
-        BuscadorDeBares.prototype.buscarBares = function (vm) {
+        BuscadorDeBares.prototype.buscarBares = function () {
             var bares = this.guiaDebares.getBares();
             bares = this.filtrador.filtrar(bares);
             return bares;
@@ -205,6 +220,99 @@ var wifindBarApp;
         return BuscadorDeBares;
     }());
     wifindBarApp.BuscadorDeBares = BuscadorDeBares;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var ProcesadorDeCalificaciones = (function () {
+        function ProcesadorDeCalificaciones() {
+        }
+        return ProcesadorDeCalificaciones;
+    }());
+    wifindBarApp.ProcesadorDeCalificaciones = ProcesadorDeCalificaciones;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var CalculadorDePromedioDeCalificaciones = (function (_super) {
+        __extends(CalculadorDePromedioDeCalificaciones, _super);
+        function CalculadorDePromedioDeCalificaciones() {
+            _super.call(this);
+        }
+        CalculadorDePromedioDeCalificaciones.prototype.procesarCalificaciones = function (unaColeccionCalificaciones) {
+            var sum = 0;
+            for (var _i = 0, unaColeccionCalificaciones_1 = unaColeccionCalificaciones; _i < unaColeccionCalificaciones_1.length; _i++) {
+                var calificacion = unaColeccionCalificaciones_1[_i];
+                sum += calificacion.getValor();
+            }
+            var promedio = Math.floor(sum / unaColeccionCalificaciones.length);
+            return new wifindBarApp.CalificacionPorEstrellas(promedio);
+        };
+        return CalculadorDePromedioDeCalificaciones;
+    }(wifindBarApp.ProcesadorDeCalificaciones));
+    wifindBarApp.CalculadorDePromedioDeCalificaciones = CalculadorDePromedioDeCalificaciones;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var Calificacion = (function () {
+        function Calificacion() {
+        }
+        return Calificacion;
+    }());
+    wifindBarApp.Calificacion = Calificacion;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var CalificacionPorEstrellas = (function (_super) {
+        __extends(CalificacionPorEstrellas, _super);
+        function CalificacionPorEstrellas(estrellas) {
+            _super.call(this);
+            this.estrellas = estrellas;
+        }
+        CalificacionPorEstrellas.prototype.getValor = function () {
+            return this.estrellas;
+        };
+        return CalificacionPorEstrellas;
+    }(wifindBarApp.Calificacion));
+    wifindBarApp.CalificacionPorEstrellas = CalificacionPorEstrellas;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var CalificacionProcesada = (function () {
+        function CalificacionProcesada() {
+        }
+        CalificacionProcesada.prototype.getCalificacion = function () {
+            return this.calificacion;
+        };
+        CalificacionProcesada.prototype.setCalificacion = function (unaCalificacion) {
+            this.calificacion = unaCalificacion;
+        };
+        return CalificacionProcesada;
+    }());
+    wifindBarApp.CalificacionProcesada = CalificacionProcesada;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var CalificadorDeBares = (function () {
+        function CalificadorDeBares(unRelacionadorBarDetalles, unProcesadorDeCalificaciones) {
+            this.relacionadorBarDetalles = unRelacionadorBarDetalles;
+            this.procesaddorDeCalificaciones = unProcesadorDeCalificaciones;
+        }
+        CalificadorDeBares.prototype.calificarEnchufesDeBar = function (unBar, unaCalificacion) {
+            var unDetalle = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+            unDetalle.getHistorialEnchufes().agregarCalificacion(unaCalificacion);
+            var calificaciones = unDetalle.getHistorialEnchufes().verCalificaciones();
+            var nuevaCalificacion = this.procesaddorDeCalificaciones.procesarCalificaciones(calificaciones);
+            unDetalle.getCalificacionEnchufes().setCalificacion(nuevaCalificacion);
+        };
+        CalificadorDeBares.prototype.calificarWifiDeBar = function (unBar, unaCalificacion) {
+            var unDetalle = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+            unDetalle.getHistorialWifi().agregarCalificacion(unaCalificacion);
+            var calificaciones = unDetalle.getHistorialWifi().verCalificaciones();
+            var nuevaCalificacion = this.procesaddorDeCalificaciones.procesarCalificaciones(calificaciones);
+            unDetalle.getCalificacionWifi().setCalificacion(nuevaCalificacion);
+        };
+        return CalificadorDeBares;
+    }());
+    wifindBarApp.CalificadorDeBares = CalificadorDeBares;
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {
@@ -225,23 +333,21 @@ var wifindBarApp;
             this.unaUbicacionOrigen = unaUbicacionOrigen;
         }
         CriterioDeAceptacionDistanciaMaxima.prototype.acepta = function (unDetalleDeBar) {
-            var ubicacionBar = unDetalleDeBar.getDireccionBar();
+            var ubicacionBar = unDetalleDeBar.obtenerDireccionDeBar();
             return this.distancia(this.unaUbicacionOrigen, ubicacionBar) <= this.unaDistancia;
         };
+        CriterioDeAceptacionDistanciaMaxima.prototype.toRadians = function (number) {
+            return number * Math.PI / 180;
+        };
+        CriterioDeAceptacionDistanciaMaxima.prototype.toDegrees = function (number) {
+            return number * 180 / Math.PI;
+        };
         CriterioDeAceptacionDistanciaMaxima.prototype.distancia = function (ubicacion1, ubicacion2) {
-            if (Number.prototype.toRadians === undefined) {
-                Number.prototype.toRadians = function () { return this * Math.PI / 180; };
-            }
-            if (Number.prototype.toDegrees === undefined) {
-                Number.prototype.toDegrees = function () { return this * 180 / Math.PI; };
-            }
-            if (typeof module != 'undefined' && module.exports)
-                module.exports = LatLon;
             var R = 6371e3;
-            var φ1 = ubicacion1.getLatitud().toRadians();
-            var φ2 = ubicacion2.getLatitud().toRadians();
-            var Δφ = (ubicacion2.getLatitud() - ubicacion1.getLatitud()).toRadians();
-            var Δλ = (ubicacion2.getLongittud() - ubicacion1.getLongittud()).toRadians();
+            var φ1 = this.toRadians(ubicacion1.getLatitud());
+            var φ2 = this.toRadians(ubicacion2.getLatitud());
+            var Δφ = this.toRadians(ubicacion2.getLatitud() - ubicacion1.getLatitud());
+            var Δλ = this.toRadians(ubicacion2.getLongittud() - ubicacion1.getLongittud());
             var a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
                 Math.cos(φ1) * Math.cos(φ2) *
                     Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
@@ -274,7 +380,10 @@ var wifindBarApp;
             this.calificacionHasta = calificacionHasta;
         }
         CriterioDeAceptacionEstrellasPorEnchufes.prototype.acepta = function (unDetalleDeBar) {
-            var califEnchufes = unDetalleDeBar.getCalificacionEnchufes();
+            if (unDetalleDeBar.getCalificacionEnchufes().getCalificacion() == null) {
+                return false;
+            }
+            var califEnchufes = unDetalleDeBar.getCalificacionEnchufes().getCalificacion().getValor();
             return (califEnchufes <= this.calificacionHasta && califEnchufes >= this.calificacionDesde);
         };
         return CriterioDeAceptacionEstrellasPorEnchufes;
@@ -291,7 +400,10 @@ var wifindBarApp;
             this.calificacionHasta = calificacionHasta;
         }
         CriterioDeAceptacionEstrellasPorWifi.prototype.acepta = function (unDetalleDeBar) {
-            var califWifi = unDetalleDeBar.getCalificacionWifi();
+            if (unDetalleDeBar.getCalificacionWifi().getCalificacion() == null) {
+                return false;
+            }
+            var califWifi = unDetalleDeBar.getCalificacionWifi().getCalificacion().getValor();
             return (califWifi <= this.calificacionHasta && califWifi >= this.calificacionDesde);
         };
         return CriterioDeAceptacionEstrellasPorWifi;
@@ -300,50 +412,37 @@ var wifindBarApp;
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {
-    var GuiaDeBares = (function () {
-        function GuiaDeBares(bares) {
-            this.bares = bares;
-        }
-        GuiaDeBares.getInstance = function () {
-            return this._instance;
-        };
-        GuiaDeBares.prototype.getBares = function () {
-            return this.bares;
-        };
-        GuiaDeBares.prototype.addBar = function (unBar) {
-            (this.bares).push(unBar);
-        };
-        GuiaDeBares._instance = new GuiaDeBares([]);
-        return GuiaDeBares;
-    }());
-    wifindBarApp.GuiaDeBares = GuiaDeBares;
-})(wifindBarApp || (wifindBarApp = {}));
-var wifindBarApp;
-(function (wifindBarApp) {
     var DetalleDeBar = (function () {
         function DetalleDeBar(unBar) {
             this.bar = unBar;
+            this.calificacionProcesadaEnchufes = new wifindBarApp.CalificacionProcesada();
+            this.calificacionProcesadaWifi = new wifindBarApp.CalificacionProcesada();
+            this.historialDeCalificacionesEnchufes = new wifindBarApp.HistorialDeCalificaciones();
+            this.historialDeCalificacionesWifi = new wifindBarApp.HistorialDeCalificaciones();
         }
-        DetalleDeBar.prototype.setCalificacionProcesadaEnchufes = function (calificacion) {
-            this.calificacionProcesadaEnchufes = calificacion;
-        };
-        DetalleDeBar.prototype.setCalificacionProcesadaWifi = function (calificacion) {
-            this.calificacionProcesadaWifi = calificacion;
-        };
         DetalleDeBar.prototype.getCalificacionEnchufes = function () {
             return this.calificacionProcesadaEnchufes;
+        };
+        DetalleDeBar.prototype.setCalificacionEnchufes = function (unaCalificacionProcesada) {
+            this.calificacionProcesadaEnchufes = unaCalificacionProcesada;
         };
         DetalleDeBar.prototype.getCalificacionWifi = function () {
             return this.calificacionProcesadaWifi;
         };
-        DetalleDeBar.prototype.getBar = function () {
-            return this.bar;
+        DetalleDeBar.prototype.setCalificacionWifi = function (unaCalificacionProcesada) {
+            this.calificacionProcesadaWifi = unaCalificacionProcesada;
         };
-        DetalleDeBar.prototype.getNombreBar = function () {
-            return (this.bar).getNombre();
+        DetalleDeBar.prototype.getHistorialEnchufes = function () {
+            return this.historialDeCalificacionesEnchufes;
         };
-        DetalleDeBar.prototype.getDireccionBar = function () {
-            return (this.bar).getDireccion();
+        DetalleDeBar.prototype.getHistorialWifi = function () {
+            return this.historialDeCalificacionesWifi;
+        };
+        DetalleDeBar.prototype.obtenerNombreBar = function () {
+            return this.bar.getNombre();
+        };
+        DetalleDeBar.prototype.obtenerDireccionDeBar = function () {
+            return this.bar.getDireccion();
         };
         return DetalleDeBar;
     }());
@@ -362,9 +461,10 @@ var wifindBarApp;
 (function (wifindBarApp) {
     var DibujadorEnMapaGoogleMaps = (function (_super) {
         __extends(DibujadorEnMapaGoogleMaps, _super);
-        function DibujadorEnMapaGoogleMaps() {
+        function DibujadorEnMapaGoogleMaps(unRelacionadorBarDetalles) {
             _super.call(this);
             this.mapa = new wifindBarApp.MapaGoogleMaps();
+            this.relacionadorBarDetalles = unRelacionadorBarDetalles;
         }
         DibujadorEnMapaGoogleMaps.prototype.dibujarBaresEnMapa = function (unaColeccionDeBares, vm) {
             var marcadores = this.generarMarcadoresDeBares(unaColeccionDeBares);
@@ -377,7 +477,25 @@ var wifindBarApp;
             var i = 1;
             for (var _i = 0, bares_1 = bares; _i < bares_1.length; _i++) {
                 var bar = bares_1[_i];
-                var marcador = new wifindBarApp.MarcadorGoogleMaps(i.toString(), bar.getDireccion(), '/images/bar2.png', "bar");
+                var detalle = this.relacionadorBarDetalles.dameDetalleDeUnBar(bar);
+                var calificacionWifi;
+                if (detalle.getCalificacionWifi().getCalificacion() != null) {
+                    calificacionWifi = detalle.getCalificacionWifi().getCalificacion().getValor().toString();
+                }
+                else {
+                    calificacionWifi = 'No posee';
+                }
+                var calificacionEnchufes;
+                if (detalle.getCalificacionEnchufes().getCalificacion() != null) {
+                    calificacionEnchufes = detalle.getCalificacionEnchufes().getCalificacion().getValor().toString();
+                }
+                else {
+                    calificacionEnchufes = 'No posee';
+                }
+                var marcadorTitle = bar.getNombre().getDescripcion()
+                    + '. \n Calificacion Wifi: ' + calificacionWifi
+                    + '. \n Calificacion Enchufes: ' + calificacionEnchufes;
+                var marcador = new wifindBarApp.MarcadorGoogleMaps(i.toString(), bar.getDireccion(), '/images/bar2.png', "Bar", marcadorTitle);
                 marcadores.push(marcador);
                 i++;
             }
@@ -389,18 +507,41 @@ var wifindBarApp;
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {
+    var EntradaBarDetalle = (function () {
+        function EntradaBarDetalle(unBar, unDetalle) {
+            this.bar = unBar;
+            this.detalle = unDetalle;
+        }
+        EntradaBarDetalle.prototype.dameBar = function () {
+            return this.bar;
+        };
+        EntradaBarDetalle.prototype.dameDetalle = function () {
+            return this.detalle;
+        };
+        return EntradaBarDetalle;
+    }());
+    wifindBarApp.EntradaBarDetalle = EntradaBarDetalle;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
     var Filtrador = (function () {
-        function Filtrador(filtro, guia) {
-            this.filtro = filtro;
-            this.guiaDeDetalles = guia;
+        function Filtrador(unFiltro, unRelacionadorBarDetalles) {
+            this.filtro = unFiltro;
+            this.relacionadorBarDetalles = unRelacionadorBarDetalles;
         }
         Filtrador.prototype.filtrar = function (unaColeccionDeBares) {
+            var bares = [];
             var detalles = [];
             for (var _i = 0, unaColeccionDeBares_1 = unaColeccionDeBares; _i < unaColeccionDeBares_1.length; _i++) {
                 var bar = unaColeccionDeBares_1[_i];
-                detalles.push(this.guiaDeDetalles.dameDetalleDeBar(bar));
+                detalles.push(this.relacionadorBarDetalles.dameDetalleDeUnBar(bar));
             }
-            return (this.filtro).filtrar(detalles);
+            detalles = (this.filtro).filtrar(detalles);
+            for (var _a = 0, detalles_1 = detalles; _a < detalles_1.length; _a++) {
+                var detalle = detalles_1[_a];
+                bares.push(this.relacionadorBarDetalles.dameBarDeUnDetalle(detalle));
+            }
+            return bares;
         };
         return Filtrador;
     }());
@@ -414,61 +555,96 @@ var wifindBarApp;
         return Filtro;
     }());
     wifindBarApp.Filtro = Filtro;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
     var FiltroNull = (function (_super) {
         __extends(FiltroNull, _super);
         function FiltroNull() {
             _super.call(this);
         }
         FiltroNull.prototype.filtrar = function (unaColeccionDeDetalles) {
-            var baresFiltrados = [];
+            var detallesFiltrados = [];
             for (var _i = 0, unaColeccionDeDetalles_1 = unaColeccionDeDetalles; _i < unaColeccionDeDetalles_1.length; _i++) {
                 var detalle = unaColeccionDeDetalles_1[_i];
-                baresFiltrados.push(detalle.getBar());
+                detallesFiltrados.push(detalle);
             }
-            return baresFiltrados;
+            return detallesFiltrados;
         };
         return FiltroNull;
-    }(Filtro));
+    }(wifindBarApp.Filtro));
     wifindBarApp.FiltroNull = FiltroNull;
-    var FiltroDecorator = (function (_super) {
-        __extends(FiltroDecorator, _super);
-        function FiltroDecorator(unFiltroComponente, unaEstrategia) {
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var FiltroPorCaracteristica = (function (_super) {
+        __extends(FiltroPorCaracteristica, _super);
+        function FiltroPorCaracteristica(unFiltroComponente, unCriterioDeAceptacion) {
             _super.call(this);
             this.filtroComponente = unFiltroComponente;
-            this.estrategia = unaEstrategia;
+            this.criterioDeAceptacion = unCriterioDeAceptacion;
         }
-        FiltroDecorator.prototype.filtrar = function (unaColeccionDeDetalles) {
+        FiltroPorCaracteristica.prototype.filtrar = function (unaColeccionDeDetalles) {
             var detallesFiltrados = [];
             for (var _i = 0, unaColeccionDeDetalles_2 = unaColeccionDeDetalles; _i < unaColeccionDeDetalles_2.length; _i++) {
                 var detalle = unaColeccionDeDetalles_2[_i];
-                if (this.estrategia.acepta(detalle))
+                if (this.criterioDeAceptacion.acepta(detalle))
                     detallesFiltrados.push(detalle);
             }
             return this.filtroComponente.filtrar(detallesFiltrados);
         };
-        return FiltroDecorator;
-    }(Filtro));
-    wifindBarApp.FiltroDecorator = FiltroDecorator;
+        return FiltroPorCaracteristica;
+    }(wifindBarApp.Filtro));
+    wifindBarApp.FiltroPorCaracteristica = FiltroPorCaracteristica;
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {
-    var GuiaDetalleDeBares = (function () {
-        function GuiaDetalleDeBares(detalles) {
-            this.detalles = detalles;
+    var GuiaDeBares = (function () {
+        function GuiaDeBares() {
+            this.bares = [];
         }
-        GuiaDetalleDeBares.prototype.addDetalle = function (detalle) {
-            (this.detalles).push(detalle);
+        GuiaDeBares.prototype.getBares = function () {
+            return this.bares;
         };
-        GuiaDetalleDeBares.prototype.dameDetalleDeBar = function (unBar) {
-            for (var _i = 0, _a = this.detalles; _i < _a.length; _i++) {
-                var detalle = _a[_i];
-                if (detalle.getBar() == unBar)
-                    return detalle;
-            }
+        GuiaDeBares.prototype.agregarUnBar = function (unBar) {
+            this.bares.push(unBar);
         };
-        return GuiaDetalleDeBares;
+        return GuiaDeBares;
     }());
-    wifindBarApp.GuiaDetalleDeBares = GuiaDetalleDeBares;
+    wifindBarApp.GuiaDeBares = GuiaDeBares;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var HistorialDeCalificaciones = (function () {
+        function HistorialDeCalificaciones() {
+            this.calificaciones = [];
+        }
+        HistorialDeCalificaciones.prototype.agregarCalificacion = function (unaCalificacion) {
+            this.calificaciones.push(unaCalificacion);
+        };
+        HistorialDeCalificaciones.prototype.verCalificaciones = function () {
+            return this.calificaciones;
+        };
+        return HistorialDeCalificaciones;
+    }());
+    wifindBarApp.HistorialDeCalificaciones = HistorialDeCalificaciones;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var IngresadorDeBares = (function () {
+        function IngresadorDeBares(unaGuiaDeBares, unRelacionadorBarDetalles) {
+            this.guiaDeBares = unaGuiaDeBares;
+            this.relacionadorBarDetalles = unRelacionadorBarDetalles;
+        }
+        IngresadorDeBares.prototype.ingresarBar = function (unNombre, unaUbicacion) {
+            var unBar = new wifindBarApp.Bar(unNombre, unaUbicacion);
+            var unDetalle = new wifindBarApp.DetalleDeBar(unBar);
+            this.guiaDeBares.agregarUnBar(unBar);
+            this.relacionadorBarDetalles.agregarEntrada(unBar, unDetalle);
+        };
+        return IngresadorDeBares;
+    }());
+    wifindBarApp.IngresadorDeBares = IngresadorDeBares;
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {
@@ -510,13 +686,13 @@ var wifindBarApp;
 var wifindBarApp;
 (function (wifindBarApp) {
     var MarcadorGoogleMaps = (function () {
-        function MarcadorGoogleMaps(id, ubicacion, iconUrl, identificador) {
+        function MarcadorGoogleMaps(id, ubicacion, iconUrl, identificador, title) {
             this.id = id;
             this.latitude = ubicacion.getLatitud();
             this.longitude = ubicacion.getLongittud();
-            this.title = 'm' + id;
             this.icon = iconUrl;
             this.identificador = identificador;
+            this.options = { title: title };
         }
         MarcadorGoogleMaps.prototype.getIdentificador = function () {
             return this.identificador;
@@ -524,6 +700,51 @@ var wifindBarApp;
         return MarcadorGoogleMaps;
     }());
     wifindBarApp.MarcadorGoogleMaps = MarcadorGoogleMaps;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var Nombre = (function () {
+        function Nombre(unaDescripcion) {
+            this.descripcion = unaDescripcion;
+        }
+        Nombre.prototype.getDescripcion = function () {
+            return this.descripcion;
+        };
+        return Nombre;
+    }());
+    wifindBarApp.Nombre = Nombre;
+})(wifindBarApp || (wifindBarApp = {}));
+var wifindBarApp;
+(function (wifindBarApp) {
+    var RelacionadorBarDetalles = (function () {
+        function RelacionadorBarDetalles() {
+            this.entradasBarDetalle = [];
+        }
+        RelacionadorBarDetalles.prototype.dameDetalleDeUnBar = function (unBar) {
+            for (var _i = 0, _a = this.entradasBarDetalle; _i < _a.length; _i++) {
+                var entradaBarDetalle = _a[_i];
+                if (entradaBarDetalle.dameBar() == unBar) {
+                    return entradaBarDetalle.dameDetalle();
+                }
+            }
+            return null;
+        };
+        RelacionadorBarDetalles.prototype.dameBarDeUnDetalle = function (unDetalle) {
+            for (var _i = 0, _a = this.entradasBarDetalle; _i < _a.length; _i++) {
+                var entradaBarDetalle = _a[_i];
+                if (entradaBarDetalle.dameDetalle() == unDetalle) {
+                    return entradaBarDetalle.dameBar();
+                }
+            }
+            return null;
+        };
+        RelacionadorBarDetalles.prototype.agregarEntrada = function (unBar, unDetalle) {
+            var unaEntradaBarDetalle = new wifindBarApp.EntradaBarDetalle(unBar, unDetalle);
+            this.entradasBarDetalle.push(unaEntradaBarDetalle);
+        };
+        return RelacionadorBarDetalles;
+    }());
+    wifindBarApp.RelacionadorBarDetalles = RelacionadorBarDetalles;
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {

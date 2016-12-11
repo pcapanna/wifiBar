@@ -7,6 +7,7 @@ module wifindBarApp {
 
     // CONSTRUCTOR
     constructor() {
+      this.entradasBarDetalle = [];
     }
 
     // MENSAJES QUE RESPONDE
