@@ -33,25 +33,37 @@
           <div ng-if="vm.filtrosSeleccionados.indexOf(vm.filtros[0]) != -1" style="margin-bottom:15px;">
             <div style="width: 220px;">
               <span style="font-size:large; margin-left:3px; color: white;">WiFi min:</span>
-              <input type="number" min="1" max="5" style="float:right; width: 40px; height: 30px;"
+              <input type="number" style="float:right; width: 40px; height: 30px;"
                      ng-model="vm.minEstrellasWifi">
             </div>
             <div style="width: 220px;">
               <span style="font-size:large; margin-left:3px; color: white;">WiFi max:</span>
-              <input type="number" min="1" max="5" style="float:right; width: 40px; height: 30px;"
+              <input type="number" style="float:right; width: 40px; height: 30px;"
                      ng-model="vm.maxEstrellasWifi">
             </div>
           </div>
           <div ng-if="vm.filtrosSeleccionados.indexOf(vm.filtros[1]) != -1">
             <div style="width: 220px;">
               <span style="font-size:large; margin-left:3px; color: white;">Enchufes min:</span>
-              <input type="number" min="1" max="5" style="float:right; width: 40px; height: 30px;"
+              <input type="number" style="float:right; width: 40px; height: 30px;"
                      ng-model="vm.minEstrellasEnchufes">
             </div>
             <div style="width: 220px;">
               <span style="font-size:large; margin-left:3px; color: white;">Enchufes max:</span>
-              <input type="number" min="1" max="5" style="float:right; width: 40px; height: 30px;"
+              <input type="number" style="float:right; width: 40px; height: 30px;"
                      ng-model="vm.maxEstrellasEnchufes">
+            </div>
+          </div>
+          <div ng-if="vm.filtrosSeleccionados.indexOf(vm.filtros[2]) != -1">
+            <div style="width: 220px;">
+              <span style="font-size:large; margin-left:3px; color: white;">Aire min:</span>
+              <input type="number" style="float:right; width: 40px; height: 30px;"
+                     ng-model="vm.minEstrellasAire">
+            </div>
+            <div style="width: 220px;">
+              <span style="font-size:large; margin-left:3px; color: white;">Aire max:</span>
+              <input type="number" style="float:right; width: 40px; height: 30px;"
+                     ng-model="vm.maxEstrellasAire">
             </div>
           </div>
           <div style="color: white">

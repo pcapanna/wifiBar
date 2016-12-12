@@ -40,10 +40,18 @@ module wifindBarApp {
         } else {
           calificacionEnchufes = 'No posee'
         }
+        var calificacionAire: string;
+        if (detalle.getCalificacionAire().getCalificacion() != null) {
+          calificacionAire = detalle.getCalificacionAire().getCalificacion().getValor().toString();
+        } else {
+          calificacionAire = 'No posee'
+        }
 
         let marcadorTitle = bar.getNombre().getDescripcion()
-          + '. \n Calificacion Wifi: '+ calificacionWifi
-          + '. \n Calificacion Enchufes: '+ calificacionEnchufes;
+          + '. \n Calificacion Wifi: ' + calificacionWifi
+          + '. \n Calificacion Enchufes: ' + calificacionEnchufes
+          + '. \n Calificacion Aire: ' + calificacionAire;
+
 
         let marcador: MarcadorGoogleMaps =
           new MarcadorGoogleMaps(i.toString(), bar.getDireccion(), '/images/bar2.png', "Bar", marcadorTitle);

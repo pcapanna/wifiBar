@@ -4,7 +4,7 @@ module wifindBarApp {
 
     private marcadores:MarcadorGoogleMaps[];
 
-    constructor() {
+     constructor() {
     }
 
     public agregarMarcadores(marcadores:MarcadorGoogleMaps[]) {

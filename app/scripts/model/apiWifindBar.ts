@@ -41,6 +41,11 @@ module wifindBarApp {
       this.calificadorDeBares.calificarWifiDeBar(unBar, unaCalificacion);
     }
 
+    public calificarAireDeBar(unBar: Bar, unaCalificacion: Calificacion): void {
+      var unDetalle: DetalleDeBar = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+      this.calificadorDeBares.calificarAireDeBar(unBar, unaCalificacion);
+    }
+
     public verDetalleDeUnBar(unBar: Bar): DetalleDeBar {
       return this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
     }

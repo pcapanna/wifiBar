@@ -5,16 +5,20 @@ module wifindBarApp {
     private bar:Bar;
     private historialDeCalificacionesEnchufes;
     private historialDeCalificacionesWifi;
+    private historialDeCalificacionesAire;
     private calificacionProcesadaEnchufes:CalificacionProcesada;
     private calificacionProcesadaWifi:CalificacionProcesada;
+    private calificacionProcesadaAire:CalificacionProcesada;
 
     // CONSTRUCTOR
     constructor(unBar:Bar) {
       this.bar = unBar;
       this.calificacionProcesadaEnchufes = new CalificacionProcesada();
       this.calificacionProcesadaWifi = new CalificacionProcesada();
+      this.calificacionProcesadaAire = new CalificacionProcesada();
       this.historialDeCalificacionesEnchufes = new HistorialDeCalificaciones();
       this.historialDeCalificacionesWifi = new HistorialDeCalificaciones();
+      this.historialDeCalificacionesAire = new HistorialDeCalificaciones();
     }
 
     // MENSAJES QUE RESPONDE
@@ -32,6 +36,14 @@ module wifindBarApp {
 
     public setCalificacionWifi(unaCalificacionProcesada:CalificacionProcesada):void {
       this.calificacionProcesadaWifi = unaCalificacionProcesada;
+    }
+
+    public getCalificacionAire():CalificacionProcesada {
+      return this.calificacionProcesadaAire;
+    }
+
+    public setCalificacionAire(unaCalificacionProcesada:CalificacionProcesada):void {
+      this.calificacionProcesadaAire = unaCalificacionProcesada;
     }
 
     public getHistorialEnchufes():HistorialDeCalificaciones {

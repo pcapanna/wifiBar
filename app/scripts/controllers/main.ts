@@ -11,10 +11,12 @@ module wifindBarApp {
     private ubicacionOrigen: Ubicacion;
     public marcadores = [];
     public maxDistanciaMetros = 1000;
-    public filtros = [{id: 1, descripcion: 'WiFi'}, {id: 2, descripcion: 'Enchufes'}];
+    public filtros = [{id: 1, descripcion: 'WiFi'}, {id: 2, descripcion: 'Enchufes'}, {id: 3, descripcion: 'Aire'}];
     public filtrosSeleccionados = [];
     public minEstrellasEnchufes = 1;
     public maxEstrellasEnchufes = 5;
+    public minEstrellasAire = 1;
+    public maxEstrellasAire = 5;
     public minEstrellasWifi = 1;
     public maxEstrellasWifi = 5;
 
@@ -51,12 +53,16 @@ module wifindBarApp {
         if (filtroSeleccionado.descripcion == "Enchufes") {
           var criterio: CriterioDeAceptacion =
             new CriterioDeAceptacionEstrellasPorEnchufes(this.minEstrellasEnchufes, this.maxEstrellasEnchufes);
-        } else {
-          if (filtroSeleccionado.descripcion == "WiFi") {
-            var criterio: CriterioDeAceptacion =
-              new CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
-          }
         }
+        if (filtroSeleccionado.descripcion == "WiFi") {
+          var criterio: CriterioDeAceptacion =
+            new CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
+        }
+        if (filtroSeleccionado.descripcion == "Aire") {
+          var criterio: CriterioDeAceptacion =
+            new CriterioDeAceptacionEstrellasPorAire(this.minEstrellasAire, this.maxEstrellasAire);
+        }
+
         filtro = new FiltroPorCaracteristica(filtro, criterio);
       }
       filtro = new FiltroPorCaracteristica(filtro, criterioMaxDistancia);
@@ -91,6 +97,11 @@ module wifindBarApp {
         if (this.estaCalificadoRandom()) {
           let calificacionWifi = new CalificacionPorEstrellas(Math.floor(Math.random() * 5) + 1);
           api.calificarWifiDeBar(bar, calificacionWifi);
+        }
+
+        if (this.estaCalificadoRandom()) {
+          let calificacionAire = new CalificacionPorEstrellas(Math.floor(Math.random() * 5) + 1);
+          api.calificarAireDeBar(bar, calificacionAire);
         }
 
       }

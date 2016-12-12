@@ -3,10 +3,10 @@ module wifindBarApp {
 
     // COLABORADORES INTERNOS
     private relacionadorBarDetalles:RelacionadorBarDetalles;
-    private procesaddorDeCalificaciones:ProcesaddorDeCalificaciones;
+    private procesaddorDeCalificaciones:ProcesadorDeCalificaciones;
 
     // CONSTRUCTOR
-    constructor(unRelacionadorBarDetalles:RelacionadorBarDetalles, unProcesadorDeCalificaciones:ProcesaddorDeCalificaciones) {
+    constructor(unRelacionadorBarDetalles:RelacionadorBarDetalles, unProcesadorDeCalificaciones:ProcesadorDeCalificaciones) {
       this.relacionadorBarDetalles = unRelacionadorBarDetalles;
       this.procesaddorDeCalificaciones = unProcesadorDeCalificaciones;
     }
@@ -26,6 +26,14 @@ module wifindBarApp {
       var calificaciones:Calificacion[] = unDetalle.getHistorialWifi().verCalificaciones();
       var nuevaCalificacion:Calificacion = this.procesaddorDeCalificaciones.procesarCalificaciones(calificaciones);
       unDetalle.getCalificacionWifi().setCalificacion(nuevaCalificacion);
+    }
+
+    public calificarAireDeBar(unBar:Bar, unaCalificacion:Calificacion):void {
+      var unDetalle:DetalleDeBar = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+      unDetalle.getHistorialWifi().agregarCalificacion(unaCalificacion);
+      var calificaciones:Calificacion[] = unDetalle.getHistorialWifi().verCalificaciones();
+      var nuevaCalificacion:Calificacion = this.procesaddorDeCalificaciones.procesarCalificaciones(calificaciones);
+      unDetalle.getCalificacionAire().setCalificacion(nuevaCalificacion);
     }
 
   }

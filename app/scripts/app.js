@@ -39,10 +39,12 @@ var wifindBarApp;
             this.$scope = $scope;
             this.marcadores = [];
             this.maxDistanciaMetros = 1000;
-            this.filtros = [{ id: 1, descripcion: 'WiFi' }, { id: 2, descripcion: 'Enchufes' }];
+            this.filtros = [{ id: 1, descripcion: 'WiFi' }, { id: 2, descripcion: 'Enchufes' }, { id: 3, descripcion: 'Aire' }];
             this.filtrosSeleccionados = [];
             this.minEstrellasEnchufes = 1;
             this.maxEstrellasEnchufes = 5;
+            this.minEstrellasAire = 1;
+            this.maxEstrellasAire = 5;
             this.minEstrellasWifi = 1;
             this.maxEstrellasWifi = 5;
             this.map = {
@@ -69,10 +71,11 @@ var wifindBarApp;
                 if (filtroSeleccionado.descripcion == "Enchufes") {
                     var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorEnchufes(this.minEstrellasEnchufes, this.maxEstrellasEnchufes);
                 }
-                else {
-                    if (filtroSeleccionado.descripcion == "WiFi") {
-                        var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
-                    }
+                if (filtroSeleccionado.descripcion == "WiFi") {
+                    var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorWifi(this.minEstrellasWifi, this.maxEstrellasWifi);
+                }
+                if (filtroSeleccionado.descripcion == "Aire") {
+                    var criterio = new wifindBarApp.CriterioDeAceptacionEstrellasPorAire(this.minEstrellasAire, this.maxEstrellasAire);
                 }
                 filtro = new wifindBarApp.FiltroPorCaracteristica(filtro, criterio);
             }
@@ -103,6 +106,10 @@ var wifindBarApp;
                 if (this.estaCalificadoRandom()) {
                     var calificacionWifi = new wifindBarApp.CalificacionPorEstrellas(Math.floor(Math.random() * 5) + 1);
                     api.calificarWifiDeBar(bar, calificacionWifi);
+                }
+                if (this.estaCalificadoRandom()) {
+                    var calificacionAire = new wifindBarApp.CalificacionPorEstrellas(Math.floor(Math.random() * 5) + 1);
+                    api.calificarAireDeBar(bar, calificacionAire);
                 }
             }
         };
@@ -177,6 +184,10 @@ var wifindBarApp;
         APIWiFindBar.prototype.calificarWifiDeBar = function (unBar, unaCalificacion) {
             var unDetalle = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
             this.calificadorDeBares.calificarWifiDeBar(unBar, unaCalificacion);
+        };
+        APIWiFindBar.prototype.calificarAireDeBar = function (unBar, unaCalificacion) {
+            var unDetalle = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+            this.calificadorDeBares.calificarAireDeBar(unBar, unaCalificacion);
         };
         APIWiFindBar.prototype.verDetalleDeUnBar = function (unBar) {
             return this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
@@ -310,6 +321,13 @@ var wifindBarApp;
             var nuevaCalificacion = this.procesaddorDeCalificaciones.procesarCalificaciones(calificaciones);
             unDetalle.getCalificacionWifi().setCalificacion(nuevaCalificacion);
         };
+        CalificadorDeBares.prototype.calificarAireDeBar = function (unBar, unaCalificacion) {
+            var unDetalle = this.relacionadorBarDetalles.dameDetalleDeUnBar(unBar);
+            unDetalle.getHistorialWifi().agregarCalificacion(unaCalificacion);
+            var calificaciones = unDetalle.getHistorialWifi().verCalificaciones();
+            var nuevaCalificacion = this.procesaddorDeCalificaciones.procesarCalificaciones(calificaciones);
+            unDetalle.getCalificacionAire().setCalificacion(nuevaCalificacion);
+        };
         return CalificadorDeBares;
     }());
     wifindBarApp.CalificadorDeBares = CalificadorDeBares;
@@ -389,6 +407,23 @@ var wifindBarApp;
         return CriterioDeAceptacionEstrellasPorEnchufes;
     }(wifindBarApp.CriterioDeAceptacionEstrellasPorCaracteristica));
     wifindBarApp.CriterioDeAceptacionEstrellasPorEnchufes = CriterioDeAceptacionEstrellasPorEnchufes;
+    var CriterioDeAceptacionEstrellasPorAire = (function (_super) {
+        __extends(CriterioDeAceptacionEstrellasPorAire, _super);
+        function CriterioDeAceptacionEstrellasPorAire(calificacionDesde, calificacionHasta) {
+            _super.call(this);
+            this.calificacionDesde = calificacionDesde;
+            this.calificacionHasta = calificacionHasta;
+        }
+        CriterioDeAceptacionEstrellasPorAire.prototype.acepta = function (unDetalleDeBar) {
+            if (unDetalleDeBar.getCalificacionAire().getCalificacion() == null) {
+                return false;
+            }
+            var califWifi = unDetalleDeBar.getCalificacionAire().getCalificacion().getValor();
+            return (califWifi <= this.calificacionHasta && califWifi >= this.calificacionDesde);
+        };
+        return CriterioDeAceptacionEstrellasPorAire;
+    }(wifindBarApp.CriterioDeAceptacionEstrellasPorCaracteristica));
+    wifindBarApp.CriterioDeAceptacionEstrellasPorAire = CriterioDeAceptacionEstrellasPorAire;
 })(wifindBarApp || (wifindBarApp = {}));
 var wifindBarApp;
 (function (wifindBarApp) {
@@ -417,8 +452,10 @@ var wifindBarApp;
             this.bar = unBar;
             this.calificacionProcesadaEnchufes = new wifindBarApp.CalificacionProcesada();
             this.calificacionProcesadaWifi = new wifindBarApp.CalificacionProcesada();
+            this.calificacionProcesadaAire = new wifindBarApp.CalificacionProcesada();
             this.historialDeCalificacionesEnchufes = new wifindBarApp.HistorialDeCalificaciones();
             this.historialDeCalificacionesWifi = new wifindBarApp.HistorialDeCalificaciones();
+            this.historialDeCalificacionesAire = new wifindBarApp.HistorialDeCalificaciones();
         }
         DetalleDeBar.prototype.getCalificacionEnchufes = function () {
             return this.calificacionProcesadaEnchufes;
@@ -431,6 +468,12 @@ var wifindBarApp;
         };
         DetalleDeBar.prototype.setCalificacionWifi = function (unaCalificacionProcesada) {
             this.calificacionProcesadaWifi = unaCalificacionProcesada;
+        };
+        DetalleDeBar.prototype.getCalificacionAire = function () {
+            return this.calificacionProcesadaAire;
+        };
+        DetalleDeBar.prototype.setCalificacionAire = function (unaCalificacionProcesada) {
+            this.calificacionProcesadaAire = unaCalificacionProcesada;
         };
         DetalleDeBar.prototype.getHistorialEnchufes = function () {
             return this.historialDeCalificacionesEnchufes;
@@ -492,9 +535,17 @@ var wifindBarApp;
                 else {
                     calificacionEnchufes = 'No posee';
                 }
+                var calificacionAire;
+                if (detalle.getCalificacionAire().getCalificacion() != null) {
+                    calificacionAire = detalle.getCalificacionAire().getCalificacion().getValor().toString();
+                }
+                else {
+                    calificacionAire = 'No posee';
+                }
                 var marcadorTitle = bar.getNombre().getDescripcion()
                     + '. \n Calificacion Wifi: ' + calificacionWifi
-                    + '. \n Calificacion Enchufes: ' + calificacionEnchufes;
+                    + '. \n Calificacion Enchufes: ' + calificacionEnchufes
+                    + '. \n Calificacion Aire: ' + calificacionAire;
                 var marcador = new wifindBarApp.MarcadorGoogleMaps(i.toString(), bar.getDireccion(), '/images/bar2.png', "Bar", marcadorTitle);
                 marcadores.push(marcador);
                 i++;
