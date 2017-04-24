@@ -37,8 +37,6 @@ Ejecutar
 ## IDE recomendada WEBSTORM (Pueden usar cualquier otra. En tal caso ignorar esto): 
 
 https://www.jetbrains.com/webstorm/download
-PRE Instalar webstorm para trial 'infinito': 
-Cambiar la fecha a otra adelante en el tiempo (por ejemplo 1 de Enero de 2036). Webstorm va a calcular que la fecha caducidad de si mismo es la fecha de tu reloj + 30dias.
 
 # Descargar dependencias de proyecto:
 
