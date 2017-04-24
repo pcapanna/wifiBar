@@ -34,8 +34,9 @@ http://blog.teamtreehouse.com/install-node-js-npm-windows
 Ejecutar 
 `npm install -g grunt-cli bower yo generator-karma generator-angular`
 
-## IDE recomendada WEBSTORM (Pueden usar cualquier otra. En tal caso ignorar esto): 
+## IDE recomendada WEBSTORM: 
 
+Descargar de aquí:
 https://www.jetbrains.com/webstorm/download
 
 # Descargar dependencias de proyecto:
